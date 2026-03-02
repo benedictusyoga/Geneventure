@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		DEE81BF82F558CF900A68069 /* GeneventureIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = DEE81BF72F558CF900A68069 /* GeneventureIcon.icon */; };
+		DE2F9FA32F55ACAB00E611D2 /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = DE2F9FA22F55ACAB00E611D2 /* AppIcon.icon */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -28,10 +28,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		DE2F9FA22F55ACAB00E611D2 /* AppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = AppIcon.icon; sourceTree = "<group>"; };
 		DEE81BCD2F558CE900A68069 /* Geneventure.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Geneventure.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DEE81BDA2F558CE900A68069 /* GeneventureTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GeneventureTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		DEE81BE42F558CE900A68069 /* GeneventureUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GeneventureUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		DEE81BF72F558CF900A68069 /* GeneventureIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = GeneventureIcon.icon; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -84,7 +84,7 @@
 				DEE81BDD2F558CE900A68069 /* GeneventureTests */,
 				DEE81BE72F558CE900A68069 /* GeneventureUITests */,
 				DEE81BCE2F558CE900A68069 /* Products */,
-				DEE81BF72F558CF900A68069 /* GeneventureIcon.icon */,
+				DE2F9FA22F55ACAB00E611D2 /* AppIcon.icon */,
 			);
 			sourceTree = "<group>";
 		};
@@ -219,7 +219,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DEE81BF82F558CF900A68069 /* GeneventureIcon.icon in Resources */,
+				DE2F9FA32F55ACAB00E611D2 /* AppIcon.icon in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -423,9 +423,9 @@
 		DEE81BEF2F558CE900A68069 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = GeneventureIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = YPC2WUCUT5;
@@ -461,9 +461,9 @@
 		DEE81BF02F558CE900A68069 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = GeneventureIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = YPC2WUCUT5;
