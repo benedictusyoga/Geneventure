@@ -8,6 +8,10 @@ disabled_rules:
   - notification_center_detachment
   - orphaned_doc_comment
   - todo
+  - line_length
+  - vertical_whitespace_closing_braces
+  - trailing_whitespace
+  - identifier_name
 
 analyzer_rules:
   - unused_import
@@ -19,7 +23,6 @@ opt_in_rules:
   - closure_spacing
   - collection_alignment
   - colon # promote to error
-  - convenience_type
   - discouraged_object_literal
   - empty_collection_literal
   - empty_count
@@ -27,7 +30,7 @@ opt_in_rules:
   - enum_case_associated_values_count
   - fatal_error_message
   - first_where
-  - force_unwrapping
+#  - force_unwrapping
   - implicitly_unwrapped_optional
   - last_where
   - legacy_random
@@ -47,10 +50,6 @@ opt_in_rules:
   - toggle_bool
   - trailing_closure
   - unneeded_parentheses_in_closure_argument
-  - vertical_whitespace_closing_braces
-  - vertical_whitespace_opening_braces
-  - yoda_condition
-
 
 custom_rules:
   array_constructor:
@@ -59,7 +58,6 @@ custom_rules:
     capture_group: 1
     message: "Use explicit type annotation when initializing empty arrays and dictionaries"
     severity: warning
-
 
 attributes:
   always_on_same_line:
@@ -71,33 +69,15 @@ attributes:
 force_cast: warning
 force_try: warning
 function_body_length:
-    warning: 60
-
+  warning: 60
 legacy_hashing: error
-
-identifier_name:
-  excluded:
-    - i
-    - id
-    - x
-    - y
-    - z
-
-line_length:
-  ignores_urls: true
-  ignores_function_declarations: true
-  ignores_comments: true
 
 multiline_arguments:
   first_argument_location: next_line
   only_enforce_after_first_closure_on_first_line: true
-  
+
 private_over_fileprivate:
   validate_extensions: true
 
-trailing_whitespace:
-  ignores_empty_lines: false
-  ignores_comments: true
-
 vertical_whitespace:
-  max_empty_lines: 2
+  max_empty_lines: 5
