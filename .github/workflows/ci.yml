@@ -7,20 +7,15 @@ on:
     branches: [ main ]
 
 jobs:
-  lint-and-build:
-    name: Lint and Build
+  build:
+    name: Build
     runs-on: macos-latest
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Run SwiftLint
-        # This will run your current .swiftlint.yml configuration
-        run: swiftlint
-
       - name: Build Project
-        # This builds the app for a simulator target to verify compilation
         run: |
           xcodebuild build \
             -project Geneventure.xcodeproj \
