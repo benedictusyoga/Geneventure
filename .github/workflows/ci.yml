@@ -7,16 +7,16 @@ on:
     branches: [ main ]
 
 jobs:
-  lint-and-build:
-    name: Lint and Build
+  build:
+    name: Build
     runs-on: macos-latest
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Run SwiftLint
-        uses: realm/SwiftLint@main
+      - name: Install SwiftLint
+        run: brew install swiftlint
 
       - name: Build Project
         run: |
