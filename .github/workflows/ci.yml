@@ -20,5 +20,7 @@ jobs:
           xcodebuild build \
             -project Geneventure.xcodeproj \
             -scheme Geneventure \
-            -destination 'platform=iOS Simulator,name=iPhone 16,OS=latest'
-            -quiet
+            -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=latest' \
+            -quiet \
+            -derivedDataPath ./DerivedData \
+            ANY_BUNDLE_ID=skip.swiftlint
