@@ -8,17 +8,16 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State private var showCutscene = !UserDefaults.standard.bool(forKey: "hasSeenCutscene")
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        if showCutscene {
+            CutsceneView {
+                withAnimation(.easeInOut(duration: 0.5)) {
+                    showCutscene = false
+                }
+            }
+        } else {
+            MenuView()
         }
-        .padding()
     }
-}
-
-#Preview {
-    ContentView()
 }

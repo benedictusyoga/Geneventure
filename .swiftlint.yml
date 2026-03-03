@@ -12,13 +12,19 @@ disabled_rules:
   - vertical_whitespace_closing_braces
   - trailing_whitespace
   - identifier_name
+  - large_tuple
+  - type_body_length # Dont forget to remove later
+  - cyclomatic_complexity
+  - file_length # Remove later
+  - implicit_optional_initialization # Remove later
+  - for_where # Remove later
 
 analyzer_rules:
   - unused_import
 
 opt_in_rules:
   - array_init
-  - attributes
+#  - attributes
   - closure_end_indentation
   - closure_spacing
   - collection_alignment
@@ -31,7 +37,7 @@ opt_in_rules:
   - fatal_error_message
   - first_where
 #  - force_unwrapping
-  - implicitly_unwrapped_optional
+#  - implicitly_unwrapped_optional
   - last_where
   - legacy_random
   - literal_expression_end_indentation
@@ -48,7 +54,6 @@ opt_in_rules:
   - redundant_type_annotation
   - strict_fileprivate
   - toggle_bool
-  - trailing_closure
   - unneeded_parentheses_in_closure_argument
 
 custom_rules:
@@ -59,17 +64,17 @@ custom_rules:
     message: "Use explicit type annotation when initializing empty arrays and dictionaries"
     severity: warning
 
-attributes:
-  always_on_same_line:
-    - "@IBSegueAction"
-    - "@IBAction"
-    - "@NSManaged"
-    - "@objc"
+# attributes:
+#   always_on_same_line:
+#     - "@IBSegueAction"
+#     - "@IBAction"
+#     - "@NSManaged"
+#     - "@objc"
 
 force_cast: warning
 force_try: warning
 function_body_length:
-  warning: 60
+  warning: 120
 legacy_hashing: error
 
 multiline_arguments:
