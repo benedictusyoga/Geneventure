@@ -8,8 +8,11 @@ on:
 
 jobs:
   build:
-    name: Build
+    name: Build (${{ matrix.device }})
     runs-on: macos-latest
+    strategy:
+      matrix:
+        device: ["iPhone 16 Pro", "iPad Pro 13-inch (M4)"]
 
     steps:
       - name: Checkout Code
@@ -23,5 +26,5 @@ jobs:
           xcodebuild build \
             -project Geneventure.xcodeproj \
             -scheme Geneventure \
-            -destination 'platform=iOS Simulator,name=iPad Pro 13-inch (M4),OS=latest' \
+            -destination "platform=iOS Simulator,name=${{ matrix.device }},OS=latest" \
             -quiet
