@@ -33,7 +33,7 @@ struct CustomNavBarView: View {
                         .font(.pixelify(size: 32, weight: .bold))
                         .foregroundColor(titleColor)
 
-                    Image("title_border")
+                    Image("level_select_border")
                         .interpolation(.none)
                         .resizable()
                         .scaledToFit()
