@@ -13,6 +13,8 @@ struct CustomNavBarView: View {
     var titleColor: Color = .black
     var onBack: (() -> Void)? = nil
 
+    @Environment(\.horizontalSizeClass) private var sizeClass
+
     var body: some View {
         VStack(spacing: 0) {
             ZStack(alignment: .leading) {
@@ -30,8 +32,10 @@ struct CustomNavBarView: View {
 
                 VStack(spacing: -4) {
                     Text(title)
-                        .font(.pixelify(size: 32, weight: .bold))
+                        .font(.pixelify(size: sizeClass == .compact ? 22 : 32, weight: .bold))
                         .foregroundColor(titleColor)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
 
                     Image("level_select_border")
                         .interpolation(.none)

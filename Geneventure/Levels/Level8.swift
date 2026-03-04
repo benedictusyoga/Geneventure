@@ -24,19 +24,28 @@ class Level8Scene: GameScene {
         Round(knownParent: .Bb, mysteryParent: .BB)
     ]
     private var currentRound = 0
+    private var isCompact: Bool { size.width < 500 }
+    private var isShortScreen: Bool { size.height < 900 }
+    private var navbarHeight: CGFloat { isCompact ? 110 : 90 }
+    private var contentWidth: CGFloat { min(size.width - 40, 500) }
+    private var plateWidth: CGFloat { min(contentWidth, 700) }
     private var centerX: CGFloat { size.width / 2 }
     private var centerY: CGFloat { size.height / 2 }
+    private var slimeSize: CGFloat { isCompact ? 70 : 110 }
+    private var parentOffset: CGFloat { isCompact ? 62 : size.width * 0.09 }
 
-    private var rowInstruct: CGFloat { size.height * 0.74 }
-    private var rowRatioTitle: CGFloat { size.height * 0.63 }
-    private var rowRatioValue: CGFloat { size.height * 0.59 }
-    private var rowBar: CGFloat { size.height * 0.55 }
-    private var rowParents: CGFloat { size.height * 0.40 }
-    private var rowHint: CGFloat { size.height * 0.27 }
-    private var rowCards: CGFloat { size.height * 0.18 }
-    private var rowLabel: CGFloat { size.height * 0.05 }
+    private var usableTop: CGFloat { size.height - navbarHeight }
+    private var usableHeight: CGFloat { size.height - navbarHeight - 30 }
+    private var groupCenterY: CGFloat { usableTop - usableHeight / 2 }
 
-    private let slimeSize: CGFloat = 110
+    private var rowInstruct:   CGFloat { (isCompact || isShortScreen) ? groupCenterY + 235 : groupCenterY + 261 }
+    private var rowRatioTitle: CGFloat { (isCompact || isShortScreen) ? groupCenterY + 130 : groupCenterY + 151 }
+    private var rowRatioValue: CGFloat { (isCompact || isShortScreen) ? groupCenterY + 95  : groupCenterY + 91  }
+    private var rowBar:        CGFloat { (isCompact || isShortScreen) ? groupCenterY + 57  : groupCenterY + 39  }
+    private var rowParents:    CGFloat { (isCompact || isShortScreen) ? groupCenterY - 30  : groupCenterY - 59  }
+    private var rowHint:       CGFloat { (isCompact || isShortScreen) ? groupCenterY - 154 : groupCenterY - 196 }
+    private var rowCards:      CGFloat { (isCompact || isShortScreen) ? groupCenterY - 209 : groupCenterY - 259 }
+    private var rowLabel:      CGFloat { (isCompact || isShortScreen) ? groupCenterY - 264 : groupCenterY - 322 }
 
     private var knownSlime: SlimeNode!
     private var mysteryZone: SKSpriteNode!
@@ -84,22 +93,21 @@ class Level8Scene: GameScene {
         let names = ["instructionPlate", "roundLabel", "crossSprite"]
         for name in names { enumerateChildNodes(withName: name) { node, _ in node.removeFromParent() } }
 
-        let plateWidth = size.width * 0.85
         instructionPlate = SKSpriteNode(imageNamed: "genotype_card_pale_thin")
         instructionPlate.name = "instructionPlate"
         instructionPlate.texture?.filteringMode = .nearest
-        instructionPlate.size = CGSize(width: plateWidth, height: 120)
+        instructionPlate.size = CGSize(width: plateWidth, height: isCompact ? 100 : 140)
         instructionPlate.position = CGPoint(x: centerX, y: rowInstruct)
         addChild(instructionPlate)
 
         let instrLbl = SKLabelNode(text: "Use the offspring ratio to deduce the mystery parent!")
         instrLbl.fontName = "AvenirNext-Medium"
-        instrLbl.fontSize = 20
+        instrLbl.fontSize = isCompact ? 16 : 20
         instrLbl.fontColor = .black
         instrLbl.position = .zero
         instrLbl.verticalAlignmentMode = .center
         instrLbl.horizontalAlignmentMode = .center
-        instrLbl.preferredMaxLayoutWidth = plateWidth * 0.85
+        instrLbl.preferredMaxLayoutWidth = plateWidth * (isCompact ? 0.82 : 0.70)
         instrLbl.numberOfLines = 2
         instrLbl.zPosition = 1
         instrLbl.name = "instructionLabel"
@@ -138,52 +146,54 @@ class Level8Scene: GameScene {
 
         knownSlime = SlimeNode(color: ColorPhenotype.from(round.knownParent), size: slimeSize, isAnimated: false)
         knownSlime.name = "roundDynamic"
-        knownSlime.position = CGPoint(x: centerX - size.width * 0.09, y: rowParents)
+        knownSlime.position = CGPoint(x: centerX - parentOffset, y: rowParents)
         addChild(knownSlime)
         roundNodes.append(knownSlime)
 
-        addNameplate(genotype: round.knownParent, at: CGPoint(x: centerX - size.width * 0.09, y: rowParents - slimeSize * 0.76))
+        addNameplate(genotype: round.knownParent, at: CGPoint(x: centerX - parentOffset, y: rowParents - slimeSize * 0.76))
 
         mysteryZone = SKSpriteNode(imageNamed: "slot_empty")
         mysteryZone.name = "mysteryZone"
         mysteryZone.texture?.filteringMode = .nearest
-        mysteryZone.size = CGSize(width: 120, height: 120)
+        let zoneSize: CGFloat = isCompact ? 80 : 120
+        mysteryZone.size = CGSize(width: zoneSize, height: zoneSize)
         mysteryZone.color = .clear
         mysteryZone.colorBlendFactor = 0.0
-        mysteryZone.position = CGPoint(x: centerX + size.width * 0.09, y: rowParents)
+        mysteryZone.position = CGPoint(x: centerX + parentOffset, y: rowParents)
         addChild(mysteryZone)
         roundNodes.append(mysteryZone)
 
         mysteryQuestionLabel = SKLabelNode(text: "??")
         mysteryQuestionLabel.name = "mysteryQuestion"
         mysteryQuestionLabel.fontName = "AvenirNext-Bold"
-        mysteryQuestionLabel.fontSize = 40
+        mysteryQuestionLabel.fontSize = isCompact ? 28 : 40
         mysteryQuestionLabel.fontColor = UIColor.gray
         mysteryQuestionLabel.verticalAlignmentMode = .center
         mysteryZone.addChild(mysteryQuestionLabel)
 
-        let mysteryTitle = makeLabel("Mystery", fontSize: 18, at: CGPoint(x: centerX + size.width * 0.09, y: rowParents - slimeSize * 0.76), color: .gray)
+        let mysteryTitle = makeLabel("Mystery", fontSize: isCompact ? 14 : 18, at: CGPoint(x: centerX + parentOffset, y: rowParents - slimeSize * 0.76), color: .gray)
         mysteryTitle.name = "roundDynamic"
         addChild(mysteryTitle)
         roundNodes.append(mysteryTitle)
 
-        let ratioTitle = makeLabel("Offspring Ratio:", fontSize: 24, at: CGPoint(x: centerX, y: rowRatioTitle), bold: true)
+        let ratioTitle = makeLabel("Offspring Ratio:", fontSize: isCompact ? 16 : 24, at: CGPoint(x: centerX, y: rowRatioTitle), bold: true)
         ratioTitle.name = "roundDynamic"
         addChild(ratioTitle)
         roundNodes.append(ratioTitle)
 
-        let ratioValue = makeLabel(round.ratioText, fontSize: 32, at: CGPoint(x: centerX, y: rowRatioValue), bold: true)
+        let ratioValue = makeLabel(round.ratioText, fontSize: isCompact ? 22 : 32, at: CGPoint(x: centerX, y: rowRatioValue), bold: true)
         ratioValue.name = "roundDynamic"
         ratioValue.fontColor = UIColor(red: 0.3, green: 0.2, blue: 0.7, alpha: 1)
         addChild(ratioValue)
         roundNodes.append(ratioValue)
 
         let offspring = monohybridCross(round.knownParent, round.mysteryParent)
-        let barW: CGFloat = 40
+        let barW: CGFloat = isCompact ? 28 : 40
+        let barH: CGFloat = isCompact ? 26 : 35
         let totalW = CGFloat(offspring.count) * barW
         let barStartX = centerX - totalW / 2
         for (i, g) in offspring.enumerated() {
-            let seg = SKShapeNode(rectOf: CGSize(width: barW - 2, height: 35), cornerRadius: 4)
+            let seg = SKShapeNode(rectOf: CGSize(width: barW - 2, height: barH), cornerRadius: 4)
             seg.name = "roundDynamic"
             seg.fillColor = g.isDominant
                 ? UIColor(red: 0.55, green: 0.27, blue: 0.88, alpha: 1)
@@ -195,20 +205,20 @@ class Level8Scene: GameScene {
             roundNodes.append(seg)
         }
 
-        let choiceHint = makeLabel("Drag your answer onto the ?? slot!", fontSize: 13, at: CGPoint(x: centerX, y: rowHint), color: .gray)
+        let choiceHint = makeLabel("Drag your answer onto the ?? slot!", fontSize: isCompact ? 12 : 13, at: CGPoint(x: centerX, y: rowHint), color: .gray)
         choiceHint.name = "roundDynamic"
         addChild(choiceHint)
         roundNodes.append(choiceHint)
 
         let choices: [Genotype] = [.BB, .Bb, .bb]
-        let cSpacing: CGFloat = min(100, size.width * 0.24)
+        let cSpacing: CGFloat = isCompact ? min(90, contentWidth * 0.28) : min(100, size.width * 0.24)
         let cStartX = centerX - cSpacing
         let breathe = SKAction.repeatForever(SKAction.sequence([
             SKAction.scale(to: 1.06, duration: 0.75),
             SKAction.scale(to: 0.94, duration: 0.75)
         ]))
         for (i, g) in choices.enumerated() {
-            let card = GenotypeCardNode(genotype: g, height: 80)
+            let card = GenotypeCardNode(genotype: g, height: isCompact ? 55 : 80)
             card.name = "roundDynamic"
             let pos = CGPoint(x: cStartX + CGFloat(i) * cSpacing, y: rowCards)
             card.position = pos
@@ -225,7 +235,7 @@ class Level8Scene: GameScene {
         let isPurple = (ColorPhenotype.from(genotype) == .purple)
         let cardTex = SKTexture(imageNamed: isPurple ? "genotype_card_purple" : "genotype_card_white")
         let cardRatio = cardTex.size().width / cardTex.size().height
-        let cardH: CGFloat = 50
+        let cardH: CGFloat = isCompact ? 36 : 50
         let card = SKSpriteNode(texture: cardTex)
         card.texture?.filteringMode = .nearest
         card.size = CGSize(width: cardH * cardRatio, height: cardH)
@@ -235,7 +245,7 @@ class Level8Scene: GameScene {
 
         let lbl = SKLabelNode(text: genotype.displayName)
         lbl.fontName = "AvenirNext-Bold"
-        lbl.fontSize = 24
+        lbl.fontSize = isCompact ? 18 : 24
         lbl.fontColor = isPurple ? .white : .black
         lbl.verticalAlignmentMode = .center
         card.addChild(lbl)
@@ -249,7 +259,7 @@ class Level8Scene: GameScene {
         let hit = atPoint(loc)
         for card in choiceCards {
             if hit === card || hit.inParentHierarchy(card) {
-                let clone = GenotypeCardNode(genotype: card.genotype, height: 80)
+                let clone = GenotypeCardNode(genotype: card.genotype, height: isCompact ? 55 : 80)
                 clone.position = card.position
                 clone.zPosition = 20
                 addChild(clone)
@@ -298,11 +308,11 @@ class Level8Scene: GameScene {
             let revealSlime = SlimeNode(color: ColorPhenotype.from(genotype), size: slimeSize, isAnimated: false)
             revealSlime.alpha = 0
             revealSlime.setScale(0.2)
-            revealSlime.position = CGPoint(x: centerX + size.width * 0.09, y: rowParents)
+            revealSlime.position = CGPoint(x: centerX + parentOffset, y: rowParents)
             addChild(revealSlime)
             roundNodes.append(revealSlime)
 
-            let np = addNameplate(genotype: genotype, at: CGPoint(x: centerX + size.width * 0.09, y: rowParents - slimeSize * 0.76))
+            let np = addNameplate(genotype: genotype, at: CGPoint(x: centerX + parentOffset, y: rowParents - slimeSize * 0.76))
             np.alpha = 0
 
             revealSlime.run(SKAction.group([

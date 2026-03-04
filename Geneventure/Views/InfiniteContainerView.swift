@@ -149,6 +149,9 @@ struct InfiniteContainerView: View {
 }
 
 struct InfiniteIntroView: View {
+    @Environment(\.horizontalSizeClass) private var sizeClass
+    private var isCompact: Bool { sizeClass == .compact }
+    
     let highScore: Int
     let onStart: () -> Void
     
@@ -176,7 +179,9 @@ struct InfiniteIntroView: View {
     }
     
     var body: some View {
-        HStack(spacing: 80) {
+        let layout = isCompact ? AnyLayout(VStackLayout(spacing: 32)) : AnyLayout(HStackLayout(spacing: 80))
+        
+        layout {
             ZStack {
                 Image(slimeImage)
                     .interpolation(.none)
@@ -196,28 +201,30 @@ struct InfiniteIntroView: View {
                 }
                 .offset(y: -eyeYOffset)
             }
-            .scaleEffect(1.6)
+            .scaleEffect(isCompact ? 1.2 : 1.6)
             
-            VStack(spacing: 24) {
+            VStack(spacing: isCompact ? 16 : 24) {
                 VStack(spacing: 8) {
                     Text("INFINITE MODE")
-                        .font(.system(size: 42, weight: .black, design: .rounded))
+                        .font(.system(size: isCompact ? 32 : 42, weight: .black, design: .rounded))
                         .foregroundColor(.white)
                     
                     Text("Master the Punnett Square! Drag the bouncing genotypes into the grid. Be fast, be accurate, and survive as long as you can.")
-                        .font(.system(size: 18, weight: .medium, design: .rounded))
+                        .font(.system(size: isCompact ? 14 : 18, weight: .medium, design: .rounded))
                         .foregroundColor(.white.opacity(0.8))
                         .multilineTextAlignment(.center)
-                        .frame(maxWidth: 420)
+                        .frame(maxWidth: isCompact ? 300 : 420)
                 }
                 
-                HStack(spacing: 40) {
+                let buttonStack = isCompact ? AnyLayout(VStackLayout(spacing: 16)) : AnyLayout(HStackLayout(spacing: 40))
+                
+                buttonStack {
                     VStack(spacing: 4) {
                         Text("PERSONAL BEST")
-                            .font(.system(size: 16, weight: .bold, design: .rounded))
+                            .font(.system(size: isCompact ? 14 : 16, weight: .bold, design: .rounded))
                             .foregroundColor(.white.opacity(0.6))
                         Text("\(highScore)")
-                            .font(.system(size: 36, weight: .black, design: .rounded))
+                            .font(.system(size: isCompact ? 28 : 36, weight: .black, design: .rounded))
                             .foregroundColor(.white)
                     }
                     
@@ -227,11 +234,11 @@ struct InfiniteIntroView: View {
                                 .interpolation(.none)
                                 .resizable()
                                 .scaledToFit()
-                                .frame(width: 180)
+                                .frame(width: isCompact ? 150 : 180)
                                 .shadow(color: .black.opacity(0.3), radius: 6, y: 4)
                             
                             Text("START")
-                                .font(.system(size: 22, weight: .black, design: .rounded))
+                                .font(.system(size: isCompact ? 20 : 22, weight: .black, design: .rounded))
                                 .foregroundColor(.white)
                         }
                         .scaleEffect(breatheScale)
@@ -250,6 +257,9 @@ struct InfiniteIntroView: View {
 
 
 struct InfiniteHUDView: View {
+    @Environment(\.horizontalSizeClass) private var sizeClass
+    private var isCompact: Bool { sizeClass == .compact }
+    
     let score: Int
     let lives: Int
     @Binding var wrongExplanation: String?
@@ -269,7 +279,7 @@ struct InfiniteHUDView: View {
                         }
                     }
                     .padding(.leading, 20)
-                    .padding(.top, 100)
+                    .padding(.top, isCompact ? 80 : 100)
                     
                     Spacer()
                     
@@ -282,7 +292,7 @@ struct InfiniteHUDView: View {
                             .foregroundColor(.black)
                     }
                     .padding(.trailing, 24)
-                    .padding(.top, 95)
+                    .padding(.top, isCompact ? 75 : 95)
                 }
                 Spacer()
             }
@@ -299,6 +309,9 @@ struct InfiniteHUDView: View {
 }
 
 struct InfiniteGameOverView: View {
+    @Environment(\.horizontalSizeClass) private var sizeClass
+    private var isCompact: Bool { sizeClass == .compact }
+    
     let score: Int
     let onMenu: () -> Void
     let onReplay: () -> Void
@@ -314,17 +327,17 @@ struct InfiniteGameOverView: View {
                 .ignoresSafeArea()
                 .overlay(Color.black.opacity(0.6))
             
-            VStack(spacing: 40) {
+            VStack(spacing: isCompact ? 24 : 40) {
                 Text("GAME OVER")
-                    .font(.system(size: 48, weight: .black, design: .rounded))
+                    .font(.system(size: isCompact ? 36 : 48, weight: .black, design: .rounded))
                     .foregroundColor(.white)
                 
-                VStack(spacing: 12) {
+                VStack(spacing: 8) {
                     Text("Final Score")
                         .font(.system(size: 20, weight: .bold, design: .rounded))
                         .foregroundColor(.white.opacity(0.8))
                     Text("\(score)")
-                        .font(.system(size: 80, weight: .black, design: .rounded))
+                        .font(.system(size: isCompact ? 54 : 80, weight: .black, design: .rounded))
                         .foregroundColor(.white)
                 }
                 

@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ScratchPadView: View {
     let isDihybrid: Bool
+    @Environment(\.horizontalSizeClass) private var sizeClass
     @State private var p1a1: Allele = .dominant
     @State private var p1a2: Allele = .recessive
     @State private var p2a1: Allele = .dominant
@@ -66,7 +67,9 @@ struct ScratchPadView: View {
             .background(Color(UIColor.systemBackground))
             .clipShape(RoundedRectangle(cornerRadius: 16))
             .shadow(color: .black.opacity(0.1), radius: 10, y: 5)
-            .frame(maxWidth: 550, maxHeight: 650)
+            .frame(maxWidth: sizeClass == .compact ? .infinity : 550,
+                   maxHeight: sizeClass == .compact ? 520 : 650)
+            .padding(.horizontal, sizeClass == .compact ? 16 : 0)
         }
         .environment(\.colorScheme, .light)
         .transition(.move(edge: .bottom).combined(with: .opacity))
@@ -213,9 +216,10 @@ struct ScratchPunnettGrid: View {
     let grid: [[String]]
     let colHeaders: [Allele]
     let rowHeaders: [Allele]
-    
-    private let cellSize: CGFloat = 80
-    private let headerSize: CGFloat = 50
+
+    @Environment(\.horizontalSizeClass) private var sizeClass
+    private var cellSize: CGFloat { sizeClass == .compact ? 62 : 80 }
+    private var headerSize: CGFloat { sizeClass == .compact ? 38 : 50 }
     
     var body: some View {
         VStack(spacing: 0) {
@@ -265,8 +269,9 @@ private struct DihybridScratchGrid: View {
     let rowGametes: [ScratchPadView.Gamete]
     let colGametes: [ScratchPadView.Gamete]
 
-    private let cellSize: CGFloat = 64
-    private let headerSize: CGFloat = 40
+    @Environment(\.horizontalSizeClass) private var sizeClass
+    private var cellSize: CGFloat { sizeClass == .compact ? 50 : 64 }
+    private var headerSize: CGFloat { sizeClass == .compact ? 32 : 40 }
 
     var body: some View {
         VStack(spacing: 0) {

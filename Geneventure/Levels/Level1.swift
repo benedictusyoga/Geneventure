@@ -33,12 +33,34 @@ class Level1Scene: GameScene {
     private var nextButtonLabel: SKLabelNode!
     private var nextButtonArrow: SKSpriteNode!
     
-    private var centerY: CGFloat { size.height / 2 }
-    private var parent1X: CGFloat { size.width * 0.35 }
-    private var parent2X: CGFloat { size.width * 0.50 }
-    private var offspringX: CGFloat { size.width * 0.65 }
-    private var slimeSize: CGFloat { min(120, size.width * 0.22) }
+    private var isCompact: Bool { size.width < 500 }
+
+    private var navbarHeight: CGFloat { isCompact ? 110 : 90 }
+
+    private var centerY: CGFloat {
+        let asymmetryBias: CGFloat = isCompact ? 0.055 : 0.095
+        return size.height * (0.5 + asymmetryBias) - navbarHeight / 2
+    }
+
+    private var contentWidth: CGFloat { min(size.width - 40, 480) }
+    private var contentLeft: CGFloat { (size.width - contentWidth) / 2 }
+
+    private var parent1X: CGFloat { contentLeft + contentWidth * 0.18 }
+    private var parent2X: CGFloat { contentLeft + contentWidth * 0.50 }
+    private var offspringX: CGFloat { contentLeft + contentWidth * 0.82 }
+
+    private var slimeSize: CGFloat { min(isCompact ? 80 : 110, contentWidth * 0.20) }
     private var symbolFontSize: CGFloat { slimeSize * 0.30 }
+
+    private var headerCardYOffset: CGFloat { size.height * (isCompact ? 0.13 : 0.11) }
+    private var captionYOffset: CGFloat { size.height * (isCompact ? 0.13 : 0.18) }
+    private var nextButtonYOffset: CGFloat { size.height * (isCompact ? 0.24 : 0.30) }
+
+    private var captionPlateWidth: CGFloat { contentWidth }
+    private var captionMaxWidth: CGFloat { captionPlateWidth * 0.72 }
+    private var captionFontSize: CGFloat { isCompact ? 15 : 20 }
+    private var cardFontSize: CGFloat { isCompact ? 13 : 18 }
+
     
     override func didMove(to view: SKView) {
         removeAllChildren()
@@ -95,7 +117,7 @@ class Level1Scene: GameScene {
         captionPlate = SKSpriteNode(imageNamed: "genotype_card_pale_thin")
         captionPlate.name = "captionPlate"
         captionPlate.texture?.filteringMode = .nearest
-        captionPlate.position = CGPoint(x: size.width / 2, y: centerY - size.height * 0.18)
+        captionPlate.position = CGPoint(x: size.width / 2, y: centerY - captionYOffset)
         addChild(captionPlate)
         
         captionLabel = nil
@@ -110,12 +132,12 @@ class Level1Scene: GameScene {
             card.size = CGSize(width: cardHeight * ratio, height: cardHeight)
             
             let xPos = (nodeName == "p1") ? parent1X : (nodeName == "p2") ? parent2X : offspringX
-            card.position = CGPoint(x: xPos, y: centerY + size.height * 0.11)
+            card.position = CGPoint(x: xPos, y: centerY + headerCardYOffset)
             addChild(card)
             
             let lbl = SKLabelNode(text: text)
             lbl.fontName = "AvenirNext-Bold"
-            lbl.fontSize = 18
+            lbl.fontSize = cardFontSize
             lbl.verticalAlignmentMode = .center
             card.addChild(lbl)
             
@@ -147,7 +169,7 @@ class Level1Scene: GameScene {
         nextButton.size = CGSize(width: btnHeight * ratio, height: btnHeight)
         
         nextButton.name = "nextButton"
-        nextButton.position = CGPoint(x: size.width / 2, y: centerY - size.height * 0.30)
+        nextButton.position = CGPoint(x: size.width / 2, y: centerY - nextButtonYOffset)
         
         let shadow = SKSpriteNode(texture: tex)
         shadow.color = .black
@@ -233,9 +255,8 @@ class Level1Scene: GameScene {
             "Wait… two Purple parents made a White offspring?! How?!"
         ]
         
-        let labelWidth = min(size.width * 0.9, 750)
-        let labelHeight: CGFloat = (captions[index].count > 40) ? 120 : 95
-        captionPlate.size = CGSize(width: labelWidth, height: labelHeight)
+        let plateHeight: CGFloat = isCompact ? 100 : 110
+        captionPlate.size = CGSize(width: captionPlateWidth, height: plateHeight)
         
         captionPlate.enumerateChildNodes(withName: "captionLabel") { node, _ in
             node.removeFromParent()
@@ -245,12 +266,12 @@ class Level1Scene: GameScene {
         let newLabel = SKLabelNode(text: captions[index])
         newLabel.name = "captionLabel"
         newLabel.fontName = "AvenirNext-Medium"
-        newLabel.fontSize = 20
+        newLabel.fontSize = captionFontSize
         newLabel.fontColor = .black
         newLabel.position = .zero
         newLabel.verticalAlignmentMode = .center
         newLabel.horizontalAlignmentMode = .center
-        newLabel.preferredMaxLayoutWidth = size.width * 0.7
+        newLabel.preferredMaxLayoutWidth = captionMaxWidth
         newLabel.numberOfLines = 0
         newLabel.zPosition = 1
         

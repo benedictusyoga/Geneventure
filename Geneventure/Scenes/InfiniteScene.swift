@@ -23,9 +23,23 @@ class InfiniteScene: GameScene {
     private var dragNode: GenotypeCardNode?
     private var dragGenotype: Genotype?
     
+    private var isCompact: Bool { size.width < 500 }
+    private var isShortScreen: Bool { size.height < 900 }
+    private var useSmallUI: Bool { isCompact || isShortScreen }
+    private var navbarHeight: CGFloat { isCompact ? 110 : 90 }
+    private var contentWidth: CGFloat { min(size.width - 40, 500) }
+    private var plateWidth: CGFloat { min(contentWidth, 700) }
     private var centerX: CGFloat { size.width / 2 }
     private var centerY: CGFloat { size.height / 2 }
-    private let cellSize: CGFloat = 80
+    private var cellSize: CGFloat { useSmallUI ? 60 : 80 }
+    
+    private var usableTop: CGFloat { size.height - navbarHeight }
+    private var usableHeight: CGFloat { size.height - navbarHeight - 30 }
+    private var groupCenterY: CGFloat { usableTop - usableHeight / 2 }
+
+    private var rowInstruct: CGFloat { useSmallUI ? groupCenterY + 180 : groupCenterY + 230 }
+    private var rowParents:  CGFloat { useSmallUI ? groupCenterY + 110 : groupCenterY + 140 }
+    private var rowGrid:     CGFloat { useSmallUI ? groupCenterY - 10  : groupCenterY - 20  }
     
     private var parentLabel: SKLabelNode!
     private var instructionPlate: SKSpriteNode!
@@ -35,7 +49,9 @@ class InfiniteScene: GameScene {
         super.didMove(to: view)
         
         physicsWorld.gravity = .zero
-        let border = SKPhysicsBody(edgeLoopFrom: CGRect(x: 20, y: 100, width: size.width - 40, height: size.height - 200))
+        let borderYTop = rowInstruct + 60
+        let borderYBot = 60.0
+        let border = SKPhysicsBody(edgeLoopFrom: CGRect(x: 10, y: borderYBot, width: size.width - 20, height: borderYTop - borderYBot))
         physicsBody = border
         physicsBody?.categoryBitMask = 0x1
         physicsBody?.collisionBitMask = 0x1
@@ -47,21 +63,21 @@ class InfiniteScene: GameScene {
     private func setupUI() {
         instructionPlate = SKSpriteNode(imageNamed: "plate")
         instructionPlate.texture?.filteringMode = .nearest
-        instructionPlate.size = CGSize(width: size.width * 0.9, height: 60)
-        instructionPlate.position = CGPoint(x: centerX, y: size.height * 0.73)
+        instructionPlate.size = CGSize(width: plateWidth, height: useSmallUI ? 50 : 60)
+        instructionPlate.position = CGPoint(x: centerX, y: rowInstruct)
         addChild(instructionPlate)
         
         instructionLabel = SKLabelNode(fontNamed: "AvenirNext-Bold")
-        instructionLabel.fontSize = 16
+        instructionLabel.fontSize = useSmallUI ? 14 : 16
         instructionLabel.fontColor = .black
         instructionLabel.verticalAlignmentMode = .center
         instructionLabel.position = .zero
         instructionPlate.addChild(instructionLabel)
         
         parentLabel = SKLabelNode(fontNamed: "AvenirNext-Bold")
-        parentLabel.fontSize = 24
+        parentLabel.fontSize = useSmallUI ? 18 : 24
         parentLabel.fontColor = .black
-        parentLabel.position = CGPoint(x: centerX, y: size.height * 0.63)
+        parentLabel.position = CGPoint(x: centerX, y: rowParents)
         addChild(parentLabel)
         
         childNode(withName: "hintToken")?.isHidden = true
@@ -91,7 +107,7 @@ class InfiniteScene: GameScene {
         )
         let gridW = cellSize * 2
         let gridH = cellSize * 2
-        gridNode.position = CGPoint(x: centerX - gridW / 2, y: size.height * 0.45 - gridH / 2)
+        gridNode.position = CGPoint(x: centerX - gridW / 2, y: rowGrid - gridH / 2)
         addChild(gridNode)
         
         spawnBouncingTokens(for: challenge)
@@ -113,10 +129,13 @@ class InfiniteScene: GameScene {
         choices.shuffle()
         
         for g in choices {
-            let token = GenotypeCardNode(genotype: g, height: 80)
+            let cardHeight: CGFloat = useSmallUI ? 60 : 80
+            let token = GenotypeCardNode(genotype: g, height: cardHeight)
+            let spawnYMin = 80.0
+            let spawnYMax = min(rowGrid - 80, 250)
             token.position = CGPoint(
                 x: CGFloat.random(in: 50...size.width - 50),
-                y: CGFloat.random(in: 120...250)
+                y: CGFloat.random(in: spawnYMin...spawnYMax)
             )
             token.zPosition = 10
             

@@ -8,16 +8,32 @@
 import SpriteKit
 
 class Level3Scene: GameScene {
+    private var isCompact: Bool { size.width < 500 }
+    private var navbarHeight: CGFloat { isCompact ? 110 : 90 }
     private var centerX: CGFloat { size.width / 2 }
-    private var centerY: CGFloat { size.height / 2 }
 
-    private var rowInstruct: CGFloat { size.height * 0.74 }
-    private var rowParents: CGFloat { size.height * 0.58 }
-    private var rowDrop: CGFloat { size.height * 0.43 }
-    private var rowOffspring: CGFloat { size.height * 0.28 }
+    private var contentWidth: CGFloat { min(size.width - 40, 500) }
+    private var parentGap: CGFloat { contentWidth * 0.20 }
 
-    private var parentSlimeSize: CGFloat { min(90, size.width * 0.20) }
-    private var offspringSlimeSize: CGFloat { min(100, size.width * 0.22) }
+    private var parentSlimeSize: CGFloat { min(isCompact ? 75 : 90, contentWidth * 0.18) }
+
+    private var offspringSpacing4: CGFloat { min(140, contentWidth * 0.28) }
+    private var offspringSize4: CGFloat { min(100, contentWidth * 0.20) }
+
+    private var gridColSpacing: CGFloat { contentWidth * 0.36 }
+    private var offspringSize2x2: CGFloat { min(70, contentWidth * 0.18) }
+
+    private var plateWidth: CGFloat { min(contentWidth, 700) }
+
+    private var usableTop: CGFloat { size.height - navbarHeight }
+    private var usableHeight: CGFloat { size.height - navbarHeight - 30 }
+
+    private var rowInstruct: CGFloat { usableTop - usableHeight * 0.10 }
+    private var rowParents: CGFloat { usableTop - usableHeight * 0.32 }
+    private var rowDrop: CGFloat { usableTop - usableHeight * 0.52 }
+    private var rowOffspring: CGFloat { usableTop - usableHeight * 0.79 }
+    private var rowOffspringTop: CGFloat { usableTop - usableHeight * 0.70 }
+    private var rowOffspringBot: CGFloat { usableTop - usableHeight * 0.87 }
 
     private var parent1: SlimeNode!
     private var parent2: SlimeNode!
@@ -71,18 +87,17 @@ class Level3Scene: GameScene {
         instructionPlate.name = "instructionPlate"
         instructionPlate.texture?.filteringMode = .nearest
         instructionPlate.position = CGPoint(x: centerX, y: rowInstruct)
-        let plateWidth = min(size.width * 0.9, 750)
-        instructionPlate.size = CGSize(width: plateWidth, height: 100)
+        instructionPlate.size = CGSize(width: plateWidth, height: isCompact ? 100 : 140)
         addChild(instructionPlate)
 
         instructionLabel = SKLabelNode(text: "Which one is the odd one out? Drag it to the zone!")
         instructionLabel.fontName = "AvenirNext-Medium"
-        instructionLabel.fontSize = 20
+        instructionLabel.fontSize = isCompact ? 16 : 20
         instructionLabel.fontColor = .black
         instructionLabel.position = .zero
         instructionLabel.verticalAlignmentMode = .center
         instructionLabel.horizontalAlignmentMode = .center
-        instructionLabel.preferredMaxLayoutWidth = plateWidth * 0.85
+        instructionLabel.preferredMaxLayoutWidth = plateWidth * (isCompact ? 0.82 : 0.70)
         instructionLabel.numberOfLines = 2
         instructionLabel.zPosition = 1
         instructionLabel.name = "instructionLabel"
@@ -96,7 +111,7 @@ class Level3Scene: GameScene {
         enumerateChildNodes(withName: "colorCard") { node, _ in node.removeFromParent() }
 
         let ps = parentSlimeSize
-        let gap = size.width * 0.10
+        let gap = parentGap
 
         parent1 = SlimeNode(color: .purple, size: ps, isAnimated: false)
         parent1.position = CGPoint(x: centerX - gap, y: rowParents)
@@ -123,18 +138,37 @@ class Level3Scene: GameScene {
 
     private func setupOffspring() {
         let colors: [ColorPhenotype] = [.purple, .purple, .purple, .white].shuffled()
-        let os = offspringSlimeSize
-        let spacing: CGFloat = min(140, size.width * 0.26)
-        let totalWidth = spacing * CGFloat(colors.count - 1)
-        let startX = centerX - totalWidth / 2
 
-        for (i, color) in colors.enumerated() {
-            let slime = SlimeNode(color: color, size: os, isAnimated: true)
-            slime.position = CGPoint(x: startX + CGFloat(i) * spacing, y: rowOffspring)
-            slime.name = color == .white ? "oddSlime" : "purpleSlime\(i)"
-            addNameplate(to: slime, isTop: false)
-            addChild(slime)
-            offspringSlimes.append(slime)
+        if isCompact {
+            let os = offspringSize2x2
+            let colSpacing = gridColSpacing
+            let rows: [CGFloat] = [rowOffspringTop, rowOffspringBot]
+            let cols: [CGFloat] = [centerX - colSpacing / 2, centerX + colSpacing / 2]
+
+            for (i, color) in colors.enumerated() {
+                let row = rows[i / 2]
+                let col = cols[i % 2]
+                let slime = SlimeNode(color: color, size: os, isAnimated: true)
+                slime.position = CGPoint(x: col, y: row)
+                slime.name = color == .white ? "oddSlime" : "purpleSlime\(i)"
+                addNameplate(to: slime, isTop: false, yOverride: -50)
+                addChild(slime)
+                offspringSlimes.append(slime)
+            }
+        } else {
+            let os = offspringSize4
+            let spacing = offspringSpacing4
+            let totalWidth = spacing * CGFloat(colors.count - 1)
+            let startX = centerX - totalWidth / 2
+
+            for (i, color) in colors.enumerated() {
+                let slime = SlimeNode(color: color, size: os, isAnimated: true)
+                slime.position = CGPoint(x: startX + CGFloat(i) * spacing, y: rowOffspring)
+                slime.name = color == .white ? "oddSlime" : "purpleSlime\(i)"
+                addNameplate(to: slime, isTop: false)
+                addChild(slime)
+                offspringSlimes.append(slime)
+            }
         }
     }
 
@@ -246,28 +280,44 @@ class Level3Scene: GameScene {
     }
 
     private func showRatioRound() {
+        let plateY: CGFloat
+        let barY: CGFloat
+        let cliffY: CGFloat
+        let btnY: CGFloat
+
+        if isCompact {
+            plateY = usableTop - usableHeight * 0.10
+            barY   = usableTop - usableHeight * 0.45
+            cliffY = usableTop - usableHeight * 0.65
+            btnY   = usableTop - usableHeight * 0.88
+        } else {
+            plateY = usableTop - usableHeight * 0.35
+            barY   = plateY - 150   
+            cliffY = barY - 80    
+            btnY   = cliffY - 110   
+        }
+
         let plate = SKSpriteNode(imageNamed: "genotype_card_pale_thin")
         plate.texture?.filteringMode = .nearest
-        plate.size = CGSize(width: min(size.width * 0.9, 750), height: 100)
-        plate.position = CGPoint(x: centerX, y: size.height * 0.74)
+        plate.size = CGSize(width: plateWidth, height: isCompact ? 100 : 140)
+        plate.position = CGPoint(x: centerX, y: plateY)
         plate.alpha = 0
         addChild(plate)
 
         let instrLbl = SKLabelNode(text: "The ratio of offspring is 3 Purple : 1 White!")
         instrLbl.fontName = "AvenirNext-Medium"
-        instrLbl.fontSize = 20
+        instrLbl.fontSize = isCompact ? 16 : 20
         instrLbl.fontColor = .black
         instrLbl.position = .zero
         instrLbl.verticalAlignmentMode = .center
         instrLbl.horizontalAlignmentMode = .center
-        instrLbl.preferredMaxLayoutWidth = size.width * 0.8
+        instrLbl.preferredMaxLayoutWidth = plateWidth * (isCompact ? 0.85 : 0.70)
         instrLbl.numberOfLines = 2
         instrLbl.zPosition = 1
         plate.addChild(instrLbl)
 
         plate.run(SKAction.fadeIn(withDuration: 0.4))
 
-        let barY: CGFloat = size.height * 0.55
         let segWidth: CGFloat = 60
         let segHeight: CGFloat = 36
         let segments: [(UIColor, String)] = [
@@ -308,10 +358,10 @@ class Level3Scene: GameScene {
         cliffhanger.fontName = "AvenirNext-MediumItalic"
         cliffhanger.fontSize = 16
         cliffhanger.fontColor = UIColor.systemPurple
-        cliffhanger.position = CGPoint(x: centerX, y: size.height * 0.38)
+        cliffhanger.position = CGPoint(x: centerX, y: cliffY)
         cliffhanger.verticalAlignmentMode = .center
         cliffhanger.horizontalAlignmentMode = .center
-        cliffhanger.preferredMaxLayoutWidth = size.width * 0.85
+        cliffhanger.preferredMaxLayoutWidth = plateWidth * 0.90
         cliffhanger.numberOfLines = 2
         cliffhanger.alpha = 0
         addChild(cliffhanger)
@@ -327,7 +377,7 @@ class Level3Scene: GameScene {
         btn.texture?.filteringMode = .nearest
         btn.size = CGSize(width: btnHeight * ratio, height: btnHeight)
         btn.name = "continueBtn"
-        btn.position = CGPoint(x: centerX, y: size.height * 0.15)
+        btn.position = CGPoint(x: centerX, y: btnY)
         btn.alpha = 0
         addChild(btn)
 
@@ -361,7 +411,7 @@ class Level3Scene: GameScene {
         ]))
     }
 
-    private func addNameplate(to slime: SlimeNode, isTop: Bool = true) {
+    private func addNameplate(to slime: SlimeNode, isTop: Bool = true, yOverride: CGFloat? = nil) {
         let color = slime.colorPhenotype
         let tex = SKTexture(imageNamed: "genotype_card_\(color.rawValue)")
         let ratio = tex.size().width / tex.size().height
@@ -370,11 +420,11 @@ class Level3Scene: GameScene {
         card.name = "nameplate"
         card.texture?.filteringMode = .nearest
         card.size = CGSize(width: cardHeight * ratio, height: cardHeight)
-        card.position = CGPoint(x: 0, y: isTop ? 75 : -70)
+        card.position = CGPoint(x: 0, y: yOverride ?? (isTop ? 75 : -70))
         card.zPosition = 5
         let lbl = SKLabelNode(text: color.rawValue.capitalized)
         lbl.fontName = "AvenirNext-Bold"
-        lbl.fontSize = 18
+        lbl.fontSize = isCompact ? 14 : 18
         lbl.fontColor = (color == .purple) ? .white : .black
         lbl.verticalAlignmentMode = .center
         card.addChild(lbl)

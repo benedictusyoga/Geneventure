@@ -118,6 +118,7 @@ struct WrongAnswerView: View {
 
 struct HUDView: View {
     let levelData: LevelData
+    @Environment(\.horizontalSizeClass) private var sizeClass
     @State private var showScratchPad = false
     @Binding var activeHint: HintType?
     @Binding var wrongExplanation: String?
@@ -139,7 +140,8 @@ struct HUDView: View {
                             Image("scratch_pad")
                                 .resizable()
                                 .scaledToFit()
-                                .frame(width: 80, height: 80)
+                                .frame(width: sizeClass == .compact ? 52 : 80,
+                                       height: sizeClass == .compact ? 52 : 80)
                                 .shadow(radius: 6, y: 3)
                         }
                         .padding(.trailing, 16)

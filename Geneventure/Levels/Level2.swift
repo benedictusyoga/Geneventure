@@ -29,13 +29,25 @@ class Level2Scene: GameScene {
     private var draggingSlime: SlimeNode?
     private var dragOrigin: CGPoint = .zero
     
+    private var isCompact: Bool { size.width < 500 }
+    private var navbarHeight: CGFloat { isCompact ? 110 : 90 }
     private var centerX: CGFloat { size.width / 2 }
-    private var centerY: CGFloat { size.height / 2 }
-    private var rowInstruct: CGFloat { size.height * 0.74 }
-    private var rowParents: CGFloat { size.height * 0.62 }
-    private var rowDrop: CGFloat { size.height * 0.44 }
-    private var rowChoices: CGFloat { size.height * 0.26 }
-    private var rowLabel: CGFloat { size.height * 0.05 }
+    private var contentWidth: CGFloat { min(size.width - 40, 500) }
+
+    private var parentSize: CGFloat { min(isCompact ? 75 : 100, contentWidth * 0.20) }
+    private var parentGap: CGFloat { contentWidth * 0.20 }
+    private var choiceSize: CGFloat { min(isCompact ? 80 : 120, contentWidth * 0.22) }
+    private var choiceSpacing: CGFloat { contentWidth * 0.42 }
+    private var plateWidth: CGFloat { min(contentWidth, 700) }
+
+    private var usableTop: CGFloat { size.height - navbarHeight }
+    private var usableHeight: CGFloat { size.height - navbarHeight - 30 }
+
+    private var rowInstruct: CGFloat { usableTop - usableHeight * 0.12 }
+    private var rowParents: CGFloat { usableTop - usableHeight * 0.35 }
+    private var rowDrop: CGFloat { usableTop - usableHeight * 0.57 }
+    private var rowChoices: CGFloat { usableTop - usableHeight * 0.79 }
+    private var rowLabel: CGFloat { usableTop - usableHeight * 0.97 }
     
     override func didMove(to view: SKView) {
         super.didMove(to: view)
@@ -71,19 +83,17 @@ class Level2Scene: GameScene {
         instructionPlate.name = "instructionPlate"
         instructionPlate.texture?.filteringMode = .nearest
         instructionPlate.position = CGPoint(x: centerX, y: rowInstruct)
-        let plateWidth = min(size.width * 0.9, 750)
-        let plateHeight: CGFloat = 110
-        instructionPlate.size = CGSize(width: plateWidth, height: plateHeight)
+        instructionPlate.size = CGSize(width: plateWidth, height: 110)
         addChild(instructionPlate)
 
         instructionLabel = SKLabelNode(text: "Drag the correct offspring Slime into the zone!")
         instructionLabel.fontName = "AvenirNext-Medium"
-        instructionLabel.fontSize = 20
+        instructionLabel.fontSize = isCompact ? 16 : 20
         instructionLabel.fontColor = .black
         instructionLabel.position = .zero
         instructionLabel.verticalAlignmentMode = .center
         instructionLabel.horizontalAlignmentMode = .center
-        instructionLabel.preferredMaxLayoutWidth = plateWidth * 0.8
+        instructionLabel.preferredMaxLayoutWidth = plateWidth * 0.80
         instructionLabel.numberOfLines = 2
         instructionLabel.zPosition = 1
         instructionPlate.addChild(instructionLabel)
@@ -140,8 +150,8 @@ class Level2Scene: GameScene {
         let (g1, g2) = rounds[currentRound]
         roundLabel?.text = "Round \(currentRound + 1) / 4"
         
-        let ps = min(100, size.width * 0.22)
-        let gap = size.width * 0.10
+        let ps = parentSize
+        let gap = parentGap
         parent1Slime = SlimeNode(color: ColorPhenotype.from(g1), size: ps, isAnimated: false)
         parent1Slime.position = CGPoint(x: centerX - gap, y: rowParents)
         parent1Slime.name = "parent1"
@@ -164,8 +174,8 @@ class Level2Scene: GameScene {
             choices = [.white, .purple]
         }
 
-        let cs = min(120, size.width * 0.22)
-        let spacing: CGFloat = size.width * 0.20
+        let cs = choiceSize
+        let spacing = choiceSpacing
         let startX = centerX - spacing / 2
         for (i, color) in choices.enumerated() {
             let slime = SlimeNode(color: color, size: cs, isAnimated: true)
