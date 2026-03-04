@@ -8,16 +8,26 @@
 import SpriteKit
 
 class Level10Scene: GameScene {
+    private var isCompact: Bool { size.width < 500 }
+    private var isShortScreen: Bool { size.height < 900 }
+    private var useSmallUI: Bool { isCompact || isShortScreen }
+    private var navbarHeight: CGFloat { isCompact ? 110 : 90 }
+    private var contentWidth: CGFloat { min(size.width - 40, 500) }
+    private var plateWidth: CGFloat { min(contentWidth, 700) }
     private var centerX: CGFloat { size.width / 2 }
     private var centerY: CGFloat { size.height / 2 }
-    private let cellSpacing: CGFloat = 80
+    private var cellSpacing: CGFloat { useSmallUI ? 52 : 80 }
 
-    private var rowInstruct: CGFloat { size.height * 0.74 }
-    private var rowCross: CGFloat { size.height * 0.65 }
-    private var rowGridTop: CGFloat { size.height * 0.54 }
-    private var rowButtonsTop: CGFloat { size.height * 0.22 }
-    private var rowButtonsBot: CGFloat { size.height * 0.13 }
-    private var rowHint: CGFloat { size.height * 0.08 }
+    private var usableTop: CGFloat { size.height - navbarHeight }
+    private var usableHeight: CGFloat { size.height - navbarHeight - 30 }
+    private var groupCenterY: CGFloat { usableTop - usableHeight / 2 }
+
+    private var rowInstruct:   CGFloat { useSmallUI ? groupCenterY + 184 : groupCenterY + 273 }
+    private var rowCross:      CGFloat { useSmallUI ? groupCenterY + 84  : groupCenterY + 133 }
+    private var rowGridTop:    CGFloat { useSmallUI ? groupCenterY + 13  : groupCenterY + 30  }
+    private var rowButtonsTop: CGFloat { useSmallUI ? groupCenterY - 207 : groupCenterY - 303 }
+    private var rowButtonsBot: CGFloat { useSmallUI ? groupCenterY - 289 : groupCenterY - 405 }
+    private var rowHint:       CGFloat { useSmallUI ? groupCenterY - 340 : groupCenterY - 469 }
 
     private var phase = 1
 
@@ -99,22 +109,21 @@ class Level10Scene: GameScene {
         let names = ["instructionPlate", "p1Card", "headerCross"]
         for name in names { enumerateChildNodes(withName: name) { node, _ in node.removeFromParent() } }
 
-        let plateWidth = size.width * 0.85
         instructionPlate = SKSpriteNode(imageNamed: "genotype_card_pale_thin")
         instructionPlate.name = "instructionPlate"
         instructionPlate.texture?.filteringMode = .nearest
-        instructionPlate.size = CGSize(width: plateWidth, height: 120)
+        instructionPlate.size = CGSize(width: plateWidth, height: useSmallUI ? 100 : 140)
         instructionPlate.position = CGPoint(x: centerX, y: rowInstruct)
         addChild(instructionPlate)
 
         instructionLabel = SKLabelNode(text: "Step 1: Identify the mystery parent!")
         instructionLabel.fontName = "AvenirNext-Bold"
-        instructionLabel.fontSize = 20
+        instructionLabel.fontSize = useSmallUI ? 16 : 20
         instructionLabel.fontColor = .black
         instructionLabel.position = .zero
         instructionLabel.verticalAlignmentMode = .center
         instructionLabel.horizontalAlignmentMode = .center
-        instructionLabel.preferredMaxLayoutWidth = plateWidth * 0.85
+        instructionLabel.preferredMaxLayoutWidth = plateWidth * 0.70
         instructionLabel.numberOfLines = 2
         instructionLabel.zPosition = 1
         instructionLabel.name = "instructionLabel"
@@ -122,25 +131,26 @@ class Level10Scene: GameScene {
 
         let cardTex = SKTexture(imageNamed: "genotype_card_purple")
         let cardRatio = cardTex.size().width / cardTex.size().height
-        let cardH: CGFloat = 50
-        
+        let cardH: CGFloat = useSmallUI ? 36 : 50
+        let cardGap = useSmallUI ? size.width * 0.20 : size.width * 0.10
+
         parent1Card = SKSpriteNode(texture: cardTex)
         parent1Card.name = "p1Card"
         parent1Card.texture?.filteringMode = .nearest
         parent1Card.size = CGSize(width: cardH * cardRatio, height: cardH)
-        parent1Card.position = CGPoint(x: centerX - size.width * 0.10, y: rowCross)
+        parent1Card.position = CGPoint(x: centerX - cardGap, y: rowCross)
         addChild(parent1Card)
-        
+
         let p1Lbl = SKLabelNode(text: "BbRr")
         p1Lbl.fontName = "AvenirNext-Bold"
-        p1Lbl.fontSize = 24
+        p1Lbl.fontSize = useSmallUI ? 18 : 24
         p1Lbl.fontColor = .white
         p1Lbl.verticalAlignmentMode = .center
         parent1Card.addChild(p1Lbl)
 
         let crossTex = SKTexture(imageNamed: "cross")
         let crossRatio = crossTex.size().width / crossTex.size().height
-        let crossH: CGFloat = 44
+        let crossH: CGFloat = useSmallUI ? 30 : 44
         headerCross = SKSpriteNode(texture: crossTex)
         headerCross.name = "headerCross"
         headerCross.texture?.filteringMode = .nearest
@@ -154,13 +164,17 @@ class Level10Scene: GameScene {
         enumerateChildNodes(withName: "blankZone") { node, _ in node.removeFromParent() }
         gridSlimes = Array(repeating: Array(repeating: nil, count: 4), count: 4)
 
+        let slimeSize: CGFloat = useSmallUI ? 42 : 66
+        let blankSize: CGFloat = useSmallUI ? 48 : 76
+        let blankFont: CGFloat = useSmallUI ? 22 : 32
+
         for (row, rowData) in phenotypeGrid.enumerated() {
             for (col, pheno) in rowData.enumerated() {
                 let isBlank = blanks.contains(where: { $0.row == row && $0.col == col })
                 let pos = cellPos(row: row, col: col)
 
                 if isBlank {
-                    let zone = SKShapeNode(rectOf: CGSize(width: 76, height: 76), cornerRadius: 12)
+                    let zone = SKShapeNode(rectOf: CGSize(width: blankSize, height: blankSize), cornerRadius: 12)
                     zone.name = "blankZone"
                     zone.fillColor = UIColor(white: 0.86, alpha: 1)
                     zone.strokeColor = UIColor(white: 0.6, alpha: 1)
@@ -170,11 +184,11 @@ class Level10Scene: GameScene {
                     blankNodes["\(row)_\(col)"] = zone
 
                     let q = SKLabelNode(text: "?")
-                    q.fontName = "AvenirNext-Bold"; q.fontSize = 32
+                    q.fontName = "AvenirNext-Bold"; q.fontSize = blankFont
                     q.fontColor = .gray; q.verticalAlignmentMode = .center
                     zone.addChild(q)
                 } else {
-                    let slime = SlimeNode(color: pheno.color, shape: pheno.shape, size: 66, isAnimated: false)
+                    let slime = SlimeNode(color: pheno.color, shape: pheno.shape, size: slimeSize, isAnimated: false)
                     slime.name = "gridSlime"
                     slime.position = pos
                     slime.alpha = 0
@@ -202,39 +216,42 @@ class Level10Scene: GameScene {
         enumerateChildNodes(withName: "phase1Hint") { node, _ in node.removeFromParent() }
         choiceCards.removeAll()
 
+        let zoneSize: CGFloat = useSmallUI ? 70 : 100
+        let cardGap = useSmallUI ? size.width * 0.20 : size.width * 0.10
+
         mysteryZone = SKSpriteNode(imageNamed: "slot_empty")
         mysteryZone.name = "mysteryZone"
         mysteryZone.texture?.filteringMode = .nearest
-        mysteryZone.size = CGSize(width: 100, height: 100)
+        mysteryZone.size = CGSize(width: zoneSize, height: zoneSize)
         mysteryZone.color = .clear
         mysteryZone.colorBlendFactor = 0.0
-        mysteryZone.position = CGPoint(x: centerX + size.width * 0.10, y: rowCross)
+        mysteryZone.position = CGPoint(x: centerX + cardGap, y: rowCross)
         addChild(mysteryZone)
         phase1Nodes.append(mysteryZone)
 
         let qLbl = SKLabelNode(text: "???")
-        qLbl.fontName = "AvenirNext-Bold"; qLbl.fontSize = 26
+        qLbl.fontName = "AvenirNext-Bold"; qLbl.fontSize = useSmallUI ? 18 : 26
         qLbl.fontColor = .gray; qLbl.verticalAlignmentMode = .center
         mysteryZone.addChild(qLbl)
 
         let options = ["BBRr", "BbRr", "bbrr"]
-        let spacing: CGFloat = min(220, size.width * 0.35)
+        let cardH: CGFloat = useSmallUI ? 42 : 80
+        let spacing: CGFloat = useSmallUI ? min(100, contentWidth * 0.28) : min(220, size.width * 0.35)
         let startX = centerX - spacing
         for (i, label) in options.enumerated() {
-            let card = LabCardNode(text: label)
+            let card = LabCardNode(text: label, height: cardH)
             card.name = "phase1Card"
             card.position = CGPoint(x: startX + CGFloat(i) * spacing, y: rowButtonsTop)
             addChild(card)
             choiceCards.append(card)
             phase1Nodes.append(card)
-            
+
             let breathe = SKAction.repeatForever(SKAction.sequence([
                 SKAction.scale(to: 1.05, duration: 0.8),
                 SKAction.scale(to: 0.95, duration: 0.8)
             ]))
             card.run(breathe)
         }
-
     }
 
     private func setupPhase2() {
@@ -247,10 +264,12 @@ class Level10Scene: GameScene {
             SKAction.fadeIn(withDuration: 0.2)
         ]))
 
-        let colGap: CGFloat = min(220, size.width * 0.40)
+        let btnW: CGFloat = useSmallUI ? 130 : 177
+        let btnH: CGFloat = useSmallUI ? 65 : 87
+        let colGap: CGFloat = useSmallUI ? min(140, size.width * 0.35) : min(220, size.width * 0.40)
         let cols: [CGFloat] = [centerX - colGap / 2, centerX + colGap / 2]
         let rows: [CGFloat] = [rowButtonsTop, rowButtonsBot]
-        
+
         let breathe = SKAction.repeatForever(SKAction.sequence([
             SKAction.scale(to: 1.05, duration: 0.8),
             SKAction.scale(to: 0.95, duration: 0.8)
@@ -261,23 +280,24 @@ class Level10Scene: GameScene {
             let row = i / 2
             let tile = SKNode()
             let isPurple = (color == .purple)
-            
+
             let cardTex = SKTexture(imageNamed: isPurple ? "genotype_card_purple" : "genotype_card_white")
             let bg = SKSpriteNode(texture: cardTex)
             bg.texture?.filteringMode = .nearest
-            bg.size = CGSize(width: 177, height: 87)
+            bg.size = CGSize(width: btnW, height: btnH)
             tile.addChild(bg)
 
             let lbl = SKLabelNode(text: label)
-            lbl.fontName = "AvenirNext-Bold"; lbl.fontSize = 18
+            lbl.fontName = "AvenirNext-Bold"; lbl.fontSize = useSmallUI ? 14 : 18
             lbl.fontColor = isPurple ? .white : UIColor.black
             lbl.verticalAlignmentMode = .center
-            lbl.position = CGPoint(x: -26, y: 0)
+            lbl.position = CGPoint(x: useSmallUI ? -18 : -26, y: 0)
             tile.addChild(lbl)
-            
-            let indicator = SlimeNode(color: color, shape: shape, size: 55, isAnimated: false)
+
+            let indSize: CGFloat = useSmallUI ? 38 : 55
+            let indicator = SlimeNode(color: color, shape: shape, size: indSize, isAnimated: false)
             indicator.setScale(0.75)
-            indicator.position = CGPoint(x: 52, y: 0)
+            indicator.position = CGPoint(x: useSmallUI ? 36 : 52, y: 0)
             tile.addChild(indicator)
 
             tile.position = CGPoint(x: cols[col], y: rows[row])
@@ -285,10 +305,9 @@ class Level10Scene: GameScene {
             addChild(tile)
             sourceNodes.append(tile)
             phase2Nodes.append(tile)
-            
+
             tile.run(breathe)
         }
-
     }
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -300,7 +319,7 @@ class Level10Scene: GameScene {
         if phase == 1 {
             for card in choiceCards {
                 if hit === card || hit.inParentHierarchy(card) {
-                    let clone = LabCardNode(text: card.labelText)
+                    let clone = LabCardNode(text: card.labelText, height: useSmallUI ? 42 : 80)
                     clone.position = card.position
                     clone.zPosition = 20
                     addChild(clone)
@@ -312,7 +331,7 @@ class Level10Scene: GameScene {
             for (i, tile) in sourceNodes.enumerated() {
                 if hit === tile || hit.inParentHierarchy(tile) {
                     let (color, shape, _) = phenoSources[i]
-                    let clone = SlimeNode(color: color, shape: shape, size: 66, isAnimated: true)
+                    let clone = SlimeNode(color: color, shape: shape, size: useSmallUI ? 42 : 66, isAnimated: true)
                     clone.position = tile.position
                     clone.zPosition = 20
                     addChild(clone)
@@ -405,17 +424,18 @@ class Level10Scene: GameScene {
 
             let cardTex = SKTexture(imageNamed: "genotype_card_purple")
             let cardRatio = cardTex.size().width / cardTex.size().height
-            let cardH: CGFloat = 50
+            let cardH: CGFloat = useSmallUI ? 36 : 50
+            let cardGap = useSmallUI ? size.width * 0.20 : size.width * 0.10
             let mysteryCard = SKSpriteNode(texture: cardTex)
             mysteryCard.texture?.filteringMode = .nearest
             mysteryCard.size = CGSize(width: cardH * cardRatio, height: cardH)
-            mysteryCard.position = CGPoint(x: centerX + size.width * 0.10, y: rowCross)
+            mysteryCard.position = CGPoint(x: centerX + cardGap, y: rowCross)
             mysteryCard.alpha = 0
             addChild(mysteryCard)
-            
+
             let mLbl = SKLabelNode(text: "BbRr")
             mLbl.fontName = "AvenirNext-Bold"
-            mLbl.fontSize = 24
+            mLbl.fontSize = useSmallUI ? 18 : 24
             mLbl.fontColor = .white
             mLbl.verticalAlignmentMode = .center
             mysteryCard.addChild(mLbl)
@@ -452,7 +472,7 @@ class Level10Scene: GameScene {
             blankNodes[key]?.removeFromParent()
             blankNodes.removeValue(forKey: key)
 
-            let slime = SlimeNode(color: expected.color, shape: expected.shape, size: 66, isAnimated: false)
+            let slime = SlimeNode(color: expected.color, shape: expected.shape, size: useSmallUI ? 42 : 66, isAnimated: false)
             slime.setScale(0.1)
             slime.alpha = 0
             slime.position = cellPos(row: blank.row, col: blank.col)
@@ -494,13 +514,13 @@ class Level10Scene: GameScene {
 
         phase2Nodes.forEach { $0.removeFromParent() }
 
-        let congrats = makeLabel("🎉 The Final Lab Complete! 🎉", fontSize: 22, at: CGPoint(x: centerX, y: rowHint + 40), bold: true)
+        let congrats = makeLabel("🎉 The Final Lab Complete! 🎉", fontSize: useSmallUI ? 16 : 22, at: CGPoint(x: centerX, y: rowButtonsTop), bold: true)
         congrats.fontColor = UIColor(red: 0.55, green: 0.27, blue: 0.88, alpha: 1)
         congrats.alpha = 0
         addChild(congrats)
-        
+
         let finishBtn = createFinishButton()
-        finishBtn.position = CGPoint(x: centerX, y: rowHint - 10)
+        finishBtn.position = CGPoint(x: centerX, y: rowButtonsBot)
         finishBtn.alpha = 0
         addChild(finishBtn)
 
@@ -514,7 +534,7 @@ class Level10Scene: GameScene {
     private func createFinishButton() -> SKSpriteNode {
         let tex = SKTexture(imageNamed: "genotype_card_purple_thin")
         let btnRatio = tex.size().width / tex.size().height
-        let btnH: CGFloat = 60
+        let btnH: CGFloat = useSmallUI ? 60 : 80
         let btn = SKSpriteNode(texture: tex)
         btn.texture?.filteringMode = .nearest
         btn.size = CGSize(width: btnH * btnRatio, height: btnH)
@@ -522,20 +542,20 @@ class Level10Scene: GameScene {
 
         let arrowTex = SKTexture(imageNamed: "arrow")
         let arrowRatio = arrowTex.size().width / arrowTex.size().height
-        let arrowH: CGFloat = 14
+        let arrowH: CGFloat = useSmallUI ? 14 : 20
         let arrowSprite = SKSpriteNode(texture: arrowTex)
         arrowSprite.texture?.filteringMode = .nearest
         arrowSprite.size = CGSize(width: arrowH * arrowRatio, height: arrowH)
-        arrowSprite.position = CGPoint(x: 35, y: -1)
+        arrowSprite.position = CGPoint(x: useSmallUI ? 35 : 45, y: -1)
         arrowSprite.name = "finishBtn"
         btn.addChild(arrowSprite)
 
         let btnLbl = SKLabelNode(text: "Finish")
         btnLbl.fontName = "AvenirNext-Bold"
-        btnLbl.fontSize = 18
+        btnLbl.fontSize = useSmallUI ? 18 : 24
         btnLbl.fontColor = .white
         btnLbl.verticalAlignmentMode = .center
-        btnLbl.position = CGPoint(x: -15, y: 0)
+        btnLbl.position = CGPoint(x: useSmallUI ? -15 : -20, y: 0)
         btnLbl.name = "finishBtn"
         btn.addChild(btnLbl)
 
@@ -563,21 +583,20 @@ class Level10Scene: GameScene {
 class LabCardNode: SKNode {
     let labelText: String
 
-    init(text: String) {
+    init(text: String, height: CGFloat = 80) {
         self.labelText = text
         super.init()
 
         let tex = SKTexture(imageNamed: "genotype_card_purple")
         let cardRatio = tex.size().width / tex.size().height
-        let cardH: CGFloat = 80
         let bg = SKSpriteNode(texture: tex)
         bg.texture?.filteringMode = .nearest
-        bg.size = CGSize(width: cardH * cardRatio, height: cardH)
+        bg.size = CGSize(width: height * cardRatio, height: height)
         addChild(bg)
 
         let lbl = SKLabelNode(text: text)
         lbl.fontName = "AvenirNext-Bold"
-        lbl.fontSize = 24
+        lbl.fontSize = height < 60 ? 18 : 24
         lbl.fontColor = .white
         lbl.verticalAlignmentMode = .center
         addChild(lbl)
