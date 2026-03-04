@@ -13,8 +13,11 @@ class Level4Scene: GameScene {
         (.purple, .Bb),
         (.white, .bb)
     ]
+    private var isCompact: Bool { size.width < 500 }
     private var centerX: CGFloat { size.width / 2 }
     private var centerY: CGFloat { size.height / 2 }
+    private var contentWidth: CGFloat { min(size.width - 40, 500) }
+    private var plateWidth: CGFloat { min(contentWidth, 700) }
     private var slimeSize: CGFloat { min(120, size.width * 0.22) }
     private var slimeSpacing: CGFloat { min(180, size.width * 0.28) }
 
@@ -78,21 +81,20 @@ class Level4Scene: GameScene {
 
     private func setupInstructionPlate(text: String) {
         instructionPlate?.removeFromParent()
-        let plateWidth = min(size.width * 0.9, 750)
         instructionPlate = SKSpriteNode(imageNamed: "genotype_card_pale_thin")
         instructionPlate.texture?.filteringMode = .nearest
-        instructionPlate.size = CGSize(width: plateWidth, height: 100)
+        instructionPlate.size = CGSize(width: plateWidth, height: isCompact ? 100 : 140)
         instructionPlate.position = CGPoint(x: centerX, y: rowInstruct)
         addChild(instructionPlate)
 
         instructionLabel = SKLabelNode(text: text)
         instructionLabel.fontName = "AvenirNext-Medium"
-        instructionLabel.fontSize = 20
+        instructionLabel.fontSize = isCompact ? 16 : 20
         instructionLabel.fontColor = .black
         instructionLabel.position = .zero
         instructionLabel.verticalAlignmentMode = .center
         instructionLabel.horizontalAlignmentMode = .center
-        instructionLabel.preferredMaxLayoutWidth = plateWidth * 0.85
+        instructionLabel.preferredMaxLayoutWidth = plateWidth * (isCompact ? 0.82 : 0.70)
         instructionLabel.numberOfLines = 2
         instructionLabel.zPosition = 1
         instructionPlate.addChild(instructionLabel)
