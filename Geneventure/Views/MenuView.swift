@@ -10,11 +10,14 @@ import SpriteKit
 
 struct MenuView: View {
     
+    @Environment(\.horizontalSizeClass) private var sizeClass
     @State private var isSliding = false
     @State private var showLockedAlert = false
     @ObservedObject private var audioManager = AudioManager.shared
     @ObservedObject private var gameState = GameState.shared
-    
+
+    private var isCompact: Bool { sizeClass == .compact }
+
     var body: some View {
         NavigationStack {
             ZStack {
@@ -37,41 +40,24 @@ struct MenuView: View {
                         }
                     }
                 }
-                
-                HStack(spacing: 80) {
-                    TitleCardView(scale: 1.3)
-                        .offset(y: -20)
-                    
-                    VStack(spacing: -16) {
-                        NavigationLink(destination: LevelSelectView()) {
-                            MenuButtonLabel(title: "Laboratory")
-                        }
-                        
-                        if gameState.isCompleted(10) {
-                            NavigationLink(destination: InfiniteContainerView()) {
-                                MenuButtonLabel(title: "Infinite Mode")
-                            }
-                        } else {
-                            Button {
-                                showLockedAlert = true
-                            } label: {
-                                MenuButtonLabel(title: "Infinite Mode", isLocked: true)
-                            }
-                        }
-                        
-                        NavigationLink(destination: CreditsView(categories: creditsData)) {
-                            MenuButtonLabel(title: "Credits")
-                        }
-                        
-                        Button {
-                            exit(0)
-                        } label: {
-                            MenuButtonLabel(title: "Quit Game")
-                        }
+
+                if isCompact {
+                    VStack(spacing: 24) {
+                        TitleCardView(scale: 0.85)
+
+                        menuButtons
+                    }
+                    .padding(.vertical, 32)
+                } else {
+                    HStack(spacing: 80) {
+                        TitleCardView(scale: 1.3)
+                            .offset(y: -20)
+
+                        menuButtons
                     }
                 }
-                .navigationBarHidden(true)
             }
+            .navigationBarHidden(true)
             .overlay(alignment: .topTrailing) {
                 Button {
                     audioManager.toggleMute()
@@ -81,7 +67,7 @@ struct MenuView: View {
                         .foregroundColor(.white)
                         .shadow(color: .black.opacity(0.8), radius: 2, y: 2)
                 }
-                .padding(.top, 56)
+                .padding(.top, isCompact ? 16 : 56)
                 .padding(.trailing, 20)
             }
             .alert("Laboratory Locked", isPresented: $showLockedAlert) {
@@ -91,32 +77,64 @@ struct MenuView: View {
             }
         }
     }
+
+    @ViewBuilder
+    private var menuButtons: some View {
+        VStack(spacing: isCompact ? -10 : -16) {
+            NavigationLink(destination: LevelSelectView()) {
+                MenuButtonLabel(title: "Laboratory", isCompact: isCompact)
+            }
+
+            if gameState.isCompleted(10) {
+                NavigationLink(destination: InfiniteContainerView()) {
+                    MenuButtonLabel(title: "Infinite Mode", isCompact: isCompact)
+                }
+            } else {
+                Button {
+                    showLockedAlert = true
+                } label: {
+                    MenuButtonLabel(title: "Infinite Mode", isLocked: true, isCompact: isCompact)
+                }
+            }
+
+            NavigationLink(destination: CreditsView(categories: creditsData)) {
+                MenuButtonLabel(title: "Credits", isCompact: isCompact)
+            }
+
+            Button {
+                exit(0)
+            } label: {
+                MenuButtonLabel(title: "Quit Game", isCompact: isCompact)
+            }
+        }
+    }
     
     private struct MenuButtonLabel: View {
         let title: String
         var isLocked: Bool = false
-        
+        var isCompact: Bool = false
+
         var body: some View {
             ZStack {
                 Image(isLocked ? "genotype_card_white_thin" : "genotype_card_purple_thin")
                     .interpolation(.none)
                     .resizable()
                     .scaledToFit()
-                    .frame(maxWidth: 240)
+                    .frame(maxWidth: isCompact ? 200 : 240)
                     .shadow(color: Color.black.opacity(0.3), radius: 6, x: 0, y: 4)
-                
+
                 HStack(spacing: 8) {
                     if isLocked {
                         Image(systemName: "lock.fill")
-                            .font(.system(size: 14, weight: .bold))
+                            .font(.system(size: isCompact ? 12 : 14, weight: .bold))
                             .foregroundColor(.gray)
                     }
                     Text(title)
-                        .font(.system(size: 18, weight: .black, design: .rounded))
+                        .font(.system(size: isCompact ? 15 : 18, weight: .black, design: .rounded))
                         .foregroundColor(isLocked ? .gray : .white)
                 }
             }
-            .padding(.vertical, 4)
+            .padding(.vertical, isCompact ? 2 : 4)
             .opacity(isLocked ? 0.7 : 1.0)
         }
     }
@@ -234,4 +252,8 @@ struct MenuView: View {
             .navigationBarHidden(true)
         }
     }
+}
+
+#Preview {
+    MenuView()
 }
