@@ -8,17 +8,26 @@
 import SpriteKit
 
 class Level5Scene: GameScene {
+    private var isCompact: Bool { size.width < 500 }
+    private var isShortScreen: Bool { size.height < 900 }
+    private var navbarHeight: CGFloat { isCompact ? 110 : 90 }
+    private var contentWidth: CGFloat { min(size.width - 40, 500) }
+    private var plateWidth: CGFloat { min(contentWidth, 700) }
     private var centerX: CGFloat { size.width / 2 }
     private var centerY: CGFloat { size.height / 2 }
-    private let cellSize: CGFloat = 110
+    private var cellSize: CGFloat { (isCompact || isShortScreen) ? 90 : 110 }
 
-    private var rowInstruct: CGFloat { size.height * 0.74 }
-    private var rowCross: CGFloat { size.height * 0.65 }
-    private var rowGridTop: CGFloat { size.height * 0.58 }
-    private var rowMagnifier: CGFloat { size.height * 0.29 }
-    private var rowTiles: CGFloat { size.height * 0.16 }
-    private var rowDoneBtn: CGFloat { size.height * 0.20 }
-    private var rowProgress: CGFloat { size.height * 0.05 }
+    private var usableTop: CGFloat { size.height - navbarHeight }
+    private var usableHeight: CGFloat { size.height - navbarHeight - 30 }
+
+    private var rowInstruct: CGFloat { usableTop - usableHeight * 0.10 }
+    private var rowCross: CGFloat { usableTop - usableHeight * 0.18 }
+    private var rowGridTop: CGFloat { usableTop - usableHeight * 0.28 }
+    private var rowMagnifier: CGFloat { usableTop - usableHeight * 0.70 }
+    private var rowDoneBtn: CGFloat { usableTop - usableHeight * 0.87 }
+    private var dropZoneSize: CGFloat { (isCompact || isShortScreen) ? 100 : 130 }
+    private var rowTiles: CGFloat { rowMagnifier - dropZoneSize * 0.62 - 56 }
+    private var rowProgress: CGFloat { usableTop - usableHeight * 0.97 }
     
     private var gridNode: PunnettGridNode!
     
@@ -135,8 +144,9 @@ class Level5Scene: GameScene {
         enumerateChildNodes(withName: "magnifier") { node, _ in node.removeFromParent() }
 
         let sprite = SKSpriteNode(imageNamed: "magnifier")
+        let magSize: CGFloat = isCompact ? 80 : 120
         sprite.texture?.filteringMode = .nearest
-        sprite.size = CGSize(width: 120, height: 120)
+        sprite.size = CGSize(width: magSize, height: magSize)
         sprite.name = "magnifier"
         sprite.position = CGPoint(x: centerX, y: rowMagnifier)
         addChild(sprite)
@@ -153,21 +163,20 @@ class Level5Scene: GameScene {
         enumerateChildNodes(withName: "instructionPlate") { node, _ in node.removeFromParent() }
         enumerateChildNodes(withName: "doneExploring") { node, _ in node.removeFromParent() }
 
-        let plateWidth = min(size.width * 0.9, 750)
         instructionPlate = SKSpriteNode(imageNamed: "genotype_card_pale_thin")
         instructionPlate.name = "instructionPlate"
         instructionPlate.texture?.filteringMode = .nearest
-        instructionPlate.size = CGSize(width: plateWidth, height: 100)
+        instructionPlate.size = CGSize(width: plateWidth, height: isCompact ? 100 : 140)
         instructionPlate.position = CGPoint(x: centerX, y: rowInstruct)
         addChild(instructionPlate)
 
         instructionLabel = makeLabel(
             "Tap the cells or drag the 🔍 over them to explore!",
-            fontSize: 20,
+            fontSize: isCompact ? 16 : 20,
             at: .zero
         )
         instructionLabel.numberOfLines = 2
-        instructionLabel.preferredMaxLayoutWidth = plateWidth * 0.85
+        instructionLabel.preferredMaxLayoutWidth = plateWidth * (isCompact ? 0.82 : 0.70)
         instructionLabel.fontColor = .black
         instructionLabel.zPosition = 1
         instructionLabel.name = "instructionLabel"
@@ -229,30 +238,32 @@ class Level5Scene: GameScene {
         let popup = SKNode()
         popup.zPosition = 30
         
-        let bg = SKShapeNode(rectOf: CGSize(width: 360, height: 120), cornerRadius: 16)
+        let popupW: CGFloat = min(360, size.width * 0.88)
+        let popupH: CGFloat = isCompact ? 100 : 120
+        let bg = SKShapeNode(rectOf: CGSize(width: popupW, height: popupH), cornerRadius: 16)
         bg.fillColor = UIColor(red: 0.1, green: 0.1, blue: 0.15, alpha: 0.92)
         bg.strokeColor = UIColor.white.withAlphaComponent(0.15)
         bg.lineWidth = 1
         popup.addChild(bg)
-        
+
         let titleLbl = SKLabelNode(text: title)
         titleLbl.fontName = "AvenirNext-Bold"
-        titleLbl.fontSize = 20
+        titleLbl.fontSize = isCompact ? 16 : 20
         titleLbl.fontColor = .white
         titleLbl.verticalAlignmentMode = .center
         titleLbl.horizontalAlignmentMode = .center
-        titleLbl.position = CGPoint(x: 0, y: 26)
+        titleLbl.position = CGPoint(x: 0, y: popupH * 0.22)
         popup.addChild(titleLbl)
-        
+
         let subLbl = SKLabelNode(text: subtitle)
         subLbl.fontName = "AvenirNext-Medium"
-        subLbl.fontSize = 16
+        subLbl.fontSize = isCompact ? 13 : 16
         subLbl.fontColor = UIColor.white.withAlphaComponent(0.8)
         subLbl.verticalAlignmentMode = .center
         subLbl.horizontalAlignmentMode = .center
         subLbl.numberOfLines = 2
-        subLbl.preferredMaxLayoutWidth = 320
-        subLbl.position = CGPoint(x: 0, y: -20)
+        subLbl.preferredMaxLayoutWidth = popupW - 40
+        subLbl.position = CGPoint(x: 0, y: -popupH * 0.17)
         popup.addChild(subLbl)
         
         let cellScenePos = gridNode.convert(cell.position, to: self)
@@ -288,18 +299,17 @@ class Level5Scene: GameScene {
 
         setupGrid()
         
-        let plateWidth = min(size.width * 0.9, 750)
         let qPlate = SKSpriteNode(imageNamed: "genotype_card_pale_thin")
         qPlate.name = "qPlate"
         qPlate.texture?.filteringMode = .nearest
-        qPlate.size = CGSize(width: plateWidth, height: 100)
+        qPlate.size = CGSize(width: plateWidth, height: isCompact ? 100 : 140)
         qPlate.position = CGPoint(x: centerX, y: rowInstruct)
         addChild(qPlate)
 
-        questionLabel = makeLabel("", fontSize: 20, at: .zero, bold: true)
+        questionLabel = makeLabel("", fontSize: isCompact ? 16 : 20, at: .zero, bold: true)
         questionLabel.name = "questionLabel"
         questionLabel.numberOfLines = 2
-        questionLabel.preferredMaxLayoutWidth = plateWidth * 0.85
+        questionLabel.preferredMaxLayoutWidth = plateWidth * (isCompact ? 0.82 : 0.70)
         questionLabel.fontColor = .black
         questionLabel.zPosition = 1
         qPlate.addChild(questionLabel)
@@ -308,7 +318,7 @@ class Level5Scene: GameScene {
         progressLabel.name = "progressLabel"
         addChild(progressLabel)
         
-        let dz: CGFloat = 130
+        let dz = dropZoneSize
         dropZone = SKSpriteNode(imageNamed: "slot_empty")
         dropZone.name = "dropZone"
         dropZone.texture?.filteringMode = .nearest

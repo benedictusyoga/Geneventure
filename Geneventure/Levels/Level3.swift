@@ -28,10 +28,10 @@ class Level3Scene: GameScene {
     private var usableTop: CGFloat { size.height - navbarHeight }
     private var usableHeight: CGFloat { size.height - navbarHeight - 30 }
 
-    private var rowInstruct: CGFloat   { usableTop - usableHeight * 0.10 }
-    private var rowParents: CGFloat    { usableTop - usableHeight * 0.32 }
-    private var rowDrop: CGFloat       { usableTop - usableHeight * 0.52 }
-    private var rowOffspring: CGFloat  { usableTop - usableHeight * 0.79 }
+    private var rowInstruct: CGFloat { usableTop - usableHeight * 0.10 }
+    private var rowParents: CGFloat { usableTop - usableHeight * 0.32 }
+    private var rowDrop: CGFloat { usableTop - usableHeight * 0.52 }
+    private var rowOffspring: CGFloat { usableTop - usableHeight * 0.79 }
     private var rowOffspringTop: CGFloat { usableTop - usableHeight * 0.70 }
     private var rowOffspringBot: CGFloat { usableTop - usableHeight * 0.87 }
 
@@ -281,9 +281,9 @@ class Level3Scene: GameScene {
 
     private func showRatioRound() {
         let plateY: CGFloat
-        let barY:   CGFloat
+        let barY: CGFloat
         let cliffY: CGFloat
-        let btnY:   CGFloat
+        let btnY: CGFloat
 
         if isCompact {
             plateY = usableTop - usableHeight * 0.10
@@ -293,7 +293,7 @@ class Level3Scene: GameScene {
         } else {
             plateY = usableTop - usableHeight * 0.35
             barY   = plateY - 150   
-            cliffY = barY   - 80    
+            cliffY = barY - 80    
             btnY   = cliffY - 110   
         }
 
