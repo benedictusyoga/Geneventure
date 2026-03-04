@@ -49,11 +49,18 @@ struct MenuView: View {
                     }
                     .padding(.vertical, 32)
                 } else {
-                    HStack(spacing: 80) {
-                        TitleCardView(scale: 1.3)
-                            .offset(y: -20)
+                    GeometryReader { geo in
+                        let isNarrowRegular = geo.size.width < 900
+                        let hSpacing: CGFloat    = isNarrowRegular ? 32  : 80
+                        let titleScale: CGFloat  = isNarrowRegular ? 1.0 : 1.3
 
-                        menuButtons
+                        HStack(spacing: hSpacing) {
+                            TitleCardView(scale: titleScale)
+                                .offset(y: -20)
+
+                            menuButtons
+                        }
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                     }
                 }
             }
