@@ -25,6 +25,7 @@ class Level8Scene: GameScene {
     ]
     private var currentRound = 0
     private var isCompact: Bool { size.width < 500 }
+    private var isShortScreen: Bool { size.height < 900 }
     private var navbarHeight: CGFloat { isCompact ? 110 : 90 }
     private var contentWidth: CGFloat { min(size.width - 40, 500) }
     private var plateWidth: CGFloat { min(contentWidth, 700) }
@@ -37,14 +38,14 @@ class Level8Scene: GameScene {
     private var usableHeight: CGFloat { size.height - navbarHeight - 30 }
     private var groupCenterY: CGFloat { usableTop - usableHeight / 2 }
 
-    private var rowInstruct: CGFloat { groupCenterY + 235 }
-    private var rowRatioTitle: CGFloat { groupCenterY + 130 }
-    private var rowRatioValue: CGFloat { groupCenterY + 95  }
-    private var rowBar: CGFloat { groupCenterY + 57  }
-    private var rowParents: CGFloat { groupCenterY - 30  }
-    private var rowHint: CGFloat { groupCenterY - 154 }
-    private var rowCards: CGFloat { groupCenterY - 209 }
-    private var rowLabel: CGFloat { groupCenterY - 264 }
+    private var rowInstruct:   CGFloat { (isCompact || isShortScreen) ? groupCenterY + 235 : groupCenterY + 261 }
+    private var rowRatioTitle: CGFloat { (isCompact || isShortScreen) ? groupCenterY + 130 : groupCenterY + 151 }
+    private var rowRatioValue: CGFloat { (isCompact || isShortScreen) ? groupCenterY + 95  : groupCenterY + 91  }
+    private var rowBar:        CGFloat { (isCompact || isShortScreen) ? groupCenterY + 57  : groupCenterY + 39  }
+    private var rowParents:    CGFloat { (isCompact || isShortScreen) ? groupCenterY - 30  : groupCenterY - 59  }
+    private var rowHint:       CGFloat { (isCompact || isShortScreen) ? groupCenterY - 154 : groupCenterY - 196 }
+    private var rowCards:      CGFloat { (isCompact || isShortScreen) ? groupCenterY - 209 : groupCenterY - 259 }
+    private var rowLabel:      CGFloat { (isCompact || isShortScreen) ? groupCenterY - 264 : groupCenterY - 322 }
 
     private var knownSlime: SlimeNode!
     private var mysteryZone: SKSpriteNode!
