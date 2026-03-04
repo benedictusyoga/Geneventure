@@ -22,15 +22,23 @@ class Level6Scene: GameScene {
     private var currentRound = 0
     private var filledCount = 0
 
+    private var isCompact: Bool { size.width < 500 }
+    private var navbarHeight: CGFloat { isCompact ? 110 : 90 }
+    private var contentWidth: CGFloat { min(size.width - 40, 500) }
+    private var plateWidth: CGFloat { min(contentWidth, 700) }
     private var centerX: CGFloat { size.width / 2 }
     private var centerY: CGFloat { size.height / 2 }
-    private let cellSize: CGFloat = 110
+    private var cellSize: CGFloat { isCompact ? 85 : 110 }
 
-    private var rowInstruct: CGFloat { size.height * 0.74 }
-    private var rowCross: CGFloat { size.height * 0.64 }
-    private var rowGridMid: CGFloat { size.height * 0.46 }
-    private var rowTray: CGFloat { size.height * 0.16 }
-    private var rowLabel: CGFloat { size.height * 0.05 }
+    private var usableTop: CGFloat { size.height - navbarHeight }
+    private var usableHeight: CGFloat { size.height - navbarHeight - 30 }
+    private var groupCenterY: CGFloat { usableTop - usableHeight / 2 }
+
+    private var rowInstruct: CGFloat { isCompact ? groupCenterY + 220 : size.height * 0.74 }
+    private var rowCross:    CGFloat { isCompact ? groupCenterY + 115 : size.height * 0.64 }
+    private var rowGridMid:  CGFloat { isCompact ? groupCenterY       : size.height * 0.46 }
+    private var rowTray:     CGFloat { isCompact ? groupCenterY - 165 : size.height * 0.16 }
+    private var rowLabel:    CGFloat { isCompact ? groupCenterY - 245 : size.height * 0.05 }
 
     private var gridNode: PunnettGridNode!
     private var trayTiles: [GenotypeCardNode] = []
@@ -76,26 +84,25 @@ class Level6Scene: GameScene {
         enumerateChildNodes(withName: "parentLabel") { node, _ in node.removeFromParent() }
         enumerateChildNodes(withName: "roundLabel") { node, _ in node.removeFromParent() }
 
-        let plateWidth = min(size.width * 0.9, 750)
         instructionPlate = SKSpriteNode(imageNamed: "genotype_card_pale_thin")
         instructionPlate.name = "instructionPlate"
         instructionPlate.texture?.filteringMode = .nearest
-        instructionPlate.size = CGSize(width: plateWidth, height: 100)
+        instructionPlate.size = CGSize(width: plateWidth, height: isCompact ? 100 : 140)
         instructionPlate.position = CGPoint(x: centerX, y: rowInstruct)
         addChild(instructionPlate)
 
         instructionLabel = makeLabel(
             "Drag the correct genotype into each blank cell!",
-            fontSize: 20,
+            fontSize: isCompact ? 16 : 20,
             at: .zero
         )
         instructionLabel.fontColor = .black
-        instructionLabel.preferredMaxLayoutWidth = plateWidth * 0.85
+        instructionLabel.preferredMaxLayoutWidth = plateWidth * (isCompact ? 0.82 : 0.70)
         instructionLabel.zPosition = 1
         instructionLabel.name = "instructionLabel"
         instructionPlate.addChild(instructionLabel)
 
-        parentLabel = makeLabel("", fontSize: 22, at: CGPoint(x: centerX, y: rowCross), bold: true)
+        parentLabel = makeLabel("", fontSize: isCompact ? 18 : 22, at: CGPoint(x: centerX, y: rowCross), bold: true)
         parentLabel.name = "parentLabel"
         addChild(parentLabel)
 
@@ -146,10 +153,11 @@ class Level6Scene: GameScene {
         }
 
         let needed = uniqueGenotypes(for: round)
-        let spacing: CGFloat = min(150, size.width * 0.26)
+        let cardH: CGFloat = isCompact ? 80 : 80
+        let spacing: CGFloat = min(isCompact ? 120 : 150, size.width * 0.26)
         let startX = centerX - spacing * CGFloat(needed.count - 1) / 2
         for (i, g) in needed.enumerated() {
-            let card = GenotypeCardNode(genotype: g, height: 80)
+            let card = GenotypeCardNode(genotype: g, height: cardH)
             card.position = CGPoint(x: startX + CGFloat(i) * spacing, y: rowTray)
             addChild(card)
             trayTiles.append(card)
