@@ -12,7 +12,7 @@ struct CutsceneView: View {
     @State private var currentPage = 0
     
     private let slides: [(imageName: String, caption: String, hasMagnifier: Bool)] = [
-        ("cutscene", "Ugh! Big B, little b... it’s all just alphabet soup! I'll never understand how genetics works. It's impossible!", false),
+        ("cutscene_1", "Ugh! Big B, little b... it’s all just alphabet soup! I'll never understand how genetics works. It's impossible!", false),
         ("bg_menu", "Wait a second... those slimes in the yard. Some are purple, but others are white? There is a pattern here... I just need to see it closer.", false),
         ("bg_menu", "Alright, little friends, will you teach me your secrets? Let's start the... Geneventure!", true)
     ]
@@ -85,7 +85,10 @@ private struct SlideView: View {
     let slide: (imageName: String, caption: String, hasMagnifier: Bool)
     let isLast: Bool
     @State private var isAnimating = false
-    
+    @Environment(\.horizontalSizeClass) private var sizeClass
+
+    private var isCompact: Bool { sizeClass == .compact }
+
     var body: some View {
         ZStack(alignment: .bottom) {
             GeometryReader { geo in
@@ -103,14 +106,15 @@ private struct SlideView: View {
                     isAnimating = true
                 }
             }
-            
+
             if slide.hasMagnifier {
+                let magnifierSize: CGFloat = isCompact ? 140 : 200
                 GeometryReader { geo in
                     Image("magnifier")
                         .interpolation(.none)
                         .resizable()
                         .scaledToFit()
-                        .frame(width: 200, height: 200)
+                        .frame(width: magnifierSize, height: magnifierSize)
                         .position(x: isAnimating ? geo.size.width * 0.7 : geo.size.width * 0.3,
                                   y: isAnimating ? geo.size.height * 0.3 : geo.size.height * 0.5)
                         .scaleEffect(isAnimating ? 1.05 : 0.95)
@@ -121,7 +125,7 @@ private struct SlideView: View {
                         }
                 }
             }
-            
+
             VStack(spacing: 0) {
                 Spacer()
                 ZStack {
@@ -129,18 +133,18 @@ private struct SlideView: View {
                         .interpolation(.none)
                         .resizable()
                         .scaledToFit()
-                    
+
                     Text(slide.caption)
-                        .font(.system(size: 20, weight: .semibold, design: .rounded))
+                        .font(.system(size: isCompact ? 16 : 20, weight: .semibold, design: .rounded))
                         .multilineTextAlignment(.center)
                         .foregroundColor(Color.black.opacity(0.8))
                         .minimumScaleFactor(0.5)
-                        .padding(.horizontal, 64)
-                        .padding(.vertical, 32)
+                        .padding(.horizontal, isCompact ? 32 : 64)
+                        .padding(.vertical, isCompact ? 20 : 32)
                 }
                 .frame(maxWidth: 600)
-                .padding(.horizontal, 64)
-                
+                .padding(.horizontal, isCompact ? 16 : 64)
+
                 if !isLast {
                     Text("Tap to continue...")
                         .font(.system(size: 16, weight: .bold, design: .rounded))
@@ -150,9 +154,13 @@ private struct SlideView: View {
                         .padding(.top, 24)
                         .padding(.bottom, 40)
                 } else {
-                    Spacer().frame(height: 130)
+                    Spacer().frame(height: isCompact ? 100 : 130)
                 }
             }
         }
     }
+}
+
+#Preview {
+    CutsceneView(onFinish: {})
 }
