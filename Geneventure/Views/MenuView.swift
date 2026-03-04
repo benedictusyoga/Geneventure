@@ -15,9 +15,9 @@ struct MenuView: View {
     @State private var showLockedAlert = false
     @ObservedObject private var audioManager = AudioManager.shared
     @ObservedObject private var gameState = GameState.shared
-
+    
     private var isCompact: Bool { sizeClass == .compact }
-
+    
     var body: some View {
         NavigationStack {
             ZStack {
@@ -40,11 +40,11 @@ struct MenuView: View {
                         }
                     }
                 }
-
+                
                 if isCompact {
                     VStack(spacing: 24) {
                         TitleCardView(scale: 0.85)
-
+                        
                         menuButtons
                     }
                     .padding(.vertical, 32)
@@ -53,11 +53,11 @@ struct MenuView: View {
                         let isNarrowRegular = geo.size.width < 900
                         let hSpacing: CGFloat = isNarrowRegular ? 32 : 80
                         let titleScale: CGFloat = isNarrowRegular ? 1.0 : 1.3
-
+                        
                         HStack(spacing: hSpacing) {
                             TitleCardView(scale: titleScale)
                                 .offset(y: -20)
-
+                            
                             menuButtons
                         }
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -84,14 +84,14 @@ struct MenuView: View {
             }
         }
     }
-
+    
     @ViewBuilder
     private var menuButtons: some View {
         VStack(spacing: isCompact ? -10 : -16) {
             NavigationLink(destination: LevelSelectView()) {
                 MenuButtonLabel(title: "Laboratory", isCompact: isCompact)
             }
-
+            
             if gameState.isCompleted(10) {
                 NavigationLink(destination: InfiniteContainerView()) {
                     MenuButtonLabel(title: "Infinite Mode", isCompact: isCompact)
@@ -103,11 +103,11 @@ struct MenuView: View {
                     MenuButtonLabel(title: "Infinite Mode", isLocked: true, isCompact: isCompact)
                 }
             }
-
+            
             NavigationLink(destination: CreditsView(categories: creditsData)) {
                 MenuButtonLabel(title: "Credits", isCompact: isCompact)
             }
-
+            
             Button {
                 exit(0)
             } label: {
@@ -120,7 +120,7 @@ struct MenuView: View {
         let title: String
         var isLocked: Bool = false
         var isCompact: Bool = false
-
+        
         var body: some View {
             ZStack {
                 Image(isLocked ? "genotype_card_white_thin" : "genotype_card_purple_thin")
@@ -129,7 +129,7 @@ struct MenuView: View {
                     .scaledToFit()
                     .frame(maxWidth: isCompact ? 200 : 240)
                     .shadow(color: Color.black.opacity(0.3), radius: 6, x: 0, y: 4)
-
+                
                 HStack(spacing: 8) {
                     if isLocked {
                         Image(systemName: "lock.fill")

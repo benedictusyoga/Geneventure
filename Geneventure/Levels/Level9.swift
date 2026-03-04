@@ -8,14 +8,24 @@
 import SpriteKit
 
 class Level9Scene: GameScene {
+    private var isCompact: Bool { size.width < 500 }
+    private var isShortScreen: Bool { size.height < 900 }
+    private var useSmallUI: Bool { isCompact || isShortScreen }
+    private var navbarHeight: CGFloat { isCompact ? 110 : 90 }
+    private var contentWidth: CGFloat { min(size.width - 40, 500) }
+    private var plateWidth: CGFloat { min(contentWidth, 700) }
     private var centerX: CGFloat { size.width / 2 }
     private var centerY: CGFloat { size.height / 2 }
 
-    private var rowInstruct: CGFloat { size.height * 0.74 }
-    private var rowCross: CGFloat { size.height * 0.66 }
-    private var rowGridTop: CGFloat { size.height * 0.53 }
-    private var rowButtonsTop: CGFloat { size.height * 0.21 }
-    private var rowButtonsBot: CGFloat { size.height * 0.12 }
+    private var usableTop: CGFloat { size.height - navbarHeight }
+    private var usableHeight: CGFloat { size.height - navbarHeight - 30 }
+    private var groupCenterY: CGFloat { usableTop - usableHeight / 2 }
+
+    private var rowInstruct: CGFloat { useSmallUI ? groupCenterY + 211 : groupCenterY + 303 }
+    private var rowCross: CGFloat { useSmallUI ? groupCenterY + 128 : groupCenterY + 188 }
+    private var rowGridTop: CGFloat { useSmallUI ? groupCenterY + 74 : groupCenterY + 110 }
+    private var rowButtonsTop: CGFloat { useSmallUI ? groupCenterY - 151 : groupCenterY - 227 }
+    private var rowButtonsBot: CGFloat { useSmallUI ? groupCenterY - 228 : groupCenterY - 329 }
     private var rowRatio: CGFloat { size.height * 0.10 }
     private var rowContinue: CGFloat { size.height * 0.05 }
 
@@ -82,33 +92,32 @@ class Level9Scene: GameScene {
         let names = ["instructionPlate", "crossSprite", "alleleCard"]
         for name in names { enumerateChildNodes(withName: name) { node, _ in node.removeFromParent() } }
 
-        let plateWidth = size.width * 0.85
         instructionPlate = SKSpriteNode(imageNamed: "genotype_card_pale_thin")
         instructionPlate.name = "instructionPlate"
         instructionPlate.texture?.filteringMode = .nearest
-        instructionPlate.size = CGSize(width: plateWidth, height: 120)
+        instructionPlate.size = CGSize(width: plateWidth, height: useSmallUI ? 100 : 140)
         instructionPlate.position = CGPoint(x: centerX, y: rowInstruct)
         addChild(instructionPlate)
 
         instructionLabel = SKLabelNode(text: "Tap each category to highlight matching offspring!")
         instructionLabel.fontName = "AvenirNext-Medium"
-        instructionLabel.fontSize = 20
+        instructionLabel.fontSize = useSmallUI ? 16 : 20
         instructionLabel.fontColor = .black
         instructionLabel.position = .zero
         instructionLabel.verticalAlignmentMode = .center
         instructionLabel.horizontalAlignmentMode = .center
-        instructionLabel.preferredMaxLayoutWidth = plateWidth * 0.85
+        instructionLabel.preferredMaxLayoutWidth = plateWidth * 0.70
         instructionLabel.numberOfLines = 2
         instructionLabel.zPosition = 1
         instructionLabel.name = "instructionLabel"
         instructionPlate.addChild(instructionLabel)
         staticNodes.append(instructionPlate)
 
-        let gap = size.width * 0.10
+        let cardH: CGFloat = useSmallUI ? 36 : 50
+        let gap = useSmallUI ? size.width * 0.20 : size.width * 0.10
         for xPos in [centerX - gap, centerX + gap] {
             let cardTex = SKTexture(imageNamed: "genotype_card_purple")
             let cardRatio = cardTex.size().width / cardTex.size().height
-            let cardH: CGFloat = 50
             let card = SKSpriteNode(texture: cardTex)
             card.name = "alleleCard"
             card.texture?.filteringMode = .nearest
@@ -119,7 +128,7 @@ class Level9Scene: GameScene {
 
             let lbl = SKLabelNode(text: "BbRr")
             lbl.fontName = "AvenirNext-Bold"
-            lbl.fontSize = 24
+            lbl.fontSize = useSmallUI ? 18 : 24
             lbl.fontColor = .white
             lbl.verticalAlignmentMode = .center
             card.addChild(lbl)
@@ -127,7 +136,7 @@ class Level9Scene: GameScene {
 
         let crossTex = SKTexture(imageNamed: "cross")
         let crossRatio = crossTex.size().width / crossTex.size().height
-        let crossH: CGFloat = 44
+        let crossH: CGFloat = useSmallUI ? 30 : 44
         let crossSprite = SKSpriteNode(texture: crossTex)
         crossSprite.name = "crossSprite"
         crossSprite.texture?.filteringMode = .nearest
@@ -141,14 +150,15 @@ class Level9Scene: GameScene {
         enumerateChildNodes(withName: "gridSlime") { node, _ in node.removeFromParent() }
         slimeGrid.removeAll()
 
-        let spacing: CGFloat = 80
+        let spacing: CGFloat = useSmallUI ? 52 : 80
+        let slimeSize: CGFloat = useSmallUI ? 42 : 66
         let startX = centerX - spacing * 1.5
         let startY = rowGridTop
 
         for (row, rowData) in phenotypeGrid.enumerated() {
             var rowSlimes: [SlimeNode] = []
             for (col, phenotype) in rowData.enumerated() {
-                let slime = SlimeNode(color: phenotype.color, shape: phenotype.shape, size: 66, isAnimated: false)
+                let slime = SlimeNode(color: phenotype.color, shape: phenotype.shape, size: slimeSize, isAnimated: false)
                 slime.name = "gridSlime"
                 slime.position = CGPoint(
                     x: startX + CGFloat(col) * spacing,
@@ -167,7 +177,9 @@ class Level9Scene: GameScene {
     }
 
     private func buildCategoryButtons() {
-        let colGap: CGFloat = min(220, size.width * 0.40)
+        let btnW: CGFloat = useSmallUI ? 130 : 177
+        let btnH: CGFloat = useSmallUI ? 65 : 87
+        let colGap: CGFloat = useSmallUI ? min(140, size.width * 0.35) : min(220, size.width * 0.40)
         let cols: [CGFloat] = [centerX - colGap / 2, centerX + colGap / 2]
         let rows: [CGFloat] = [rowButtonsTop, rowButtonsBot]
 
@@ -181,24 +193,25 @@ class Level9Scene: GameScene {
             let cardTex = SKTexture(imageNamed: isPurple ? "genotype_card_purple" : "genotype_card_white")
             let bg = SKSpriteNode(texture: cardTex)
             bg.texture?.filteringMode = .nearest
-            bg.size = CGSize(width: 177, height: 87)
+            bg.size = CGSize(width: btnW, height: btnH)
             bg.name = "cat_bg"
             btn.addChild(bg)
 
             let lbl = SKLabelNode(text: cat.label)
             lbl.fontName = "AvenirNext-Bold"
-            lbl.fontSize = 18
+            lbl.fontSize = useSmallUI ? 14 : 18
             lbl.fontColor = isPurple ? .white : UIColor.black
             lbl.verticalAlignmentMode = .center
             lbl.horizontalAlignmentMode = .center
             lbl.numberOfLines = 2
-            lbl.preferredMaxLayoutWidth = 100
-            lbl.position = CGPoint(x: -26, y: 0)
+            lbl.preferredMaxLayoutWidth = useSmallUI ? 70 : 100
+            lbl.position = CGPoint(x: useSmallUI ? -18 : -26, y: 0)
             btn.addChild(lbl)
 
-            let indicator = SlimeNode(color: cat.color, shape: cat.shape, size: 55, isAnimated: false)
+            let indSize: CGFloat = useSmallUI ? 38 : 55
+            let indicator = SlimeNode(color: cat.color, shape: cat.shape, size: indSize, isAnimated: false)
             indicator.setScale(0.80)
-            indicator.position = CGPoint(x: 52, y: 6)
+            indicator.position = CGPoint(x: useSmallUI ? 36 : 52, y: useSmallUI ? 4 : 6)
             btn.addChild(indicator)
 
             btn.position = CGPoint(x: cols[col], y: rows[row])
@@ -245,14 +258,14 @@ class Level9Scene: GameScene {
 
         if !isAlreadyRevealed {
             playCorrectSound()
-            let badge = SKShapeNode(circleOfRadius: 22)
+            let badge = SKShapeNode(circleOfRadius: useSmallUI ? 16 : 22)
             badge.fillColor = UIColor.systemGreen
             badge.strokeColor = .clear
-            badge.position = CGPoint(x: 74, y: 32)
+            badge.position = CGPoint(x: useSmallUI ? 52 : 74, y: useSmallUI ? 22 : 32)
             badge.name = "badge"
             let bLbl = SKLabelNode(text: "\(cat.count)")
             bLbl.fontName = "AvenirNext-Black"
-            bLbl.fontSize = 22
+            bLbl.fontSize = useSmallUI ? 16 : 22
             bLbl.fontColor = .white
             bLbl.verticalAlignmentMode = .center
             badge.addChild(bLbl)
@@ -298,28 +311,36 @@ class Level9Scene: GameScene {
     }
 
     private func showResultPage() {
+        let plateY: CGFloat = isCompact ? groupCenterY + 185 : centerY + 180
+        let ratioY: CGFloat = isCompact ? groupCenterY + 55 : centerY + 50
+        let subY: CGFloat = isCompact ? groupCenterY - 30 : centerY - 45
+        let descY: CGFloat = isCompact ? groupCenterY - 105 : centerY - 130
+        let btnY: CGFloat = isCompact ? groupCenterY - 180 : rowContinue + 60
+
         let resultPlate = SKSpriteNode(imageNamed: "genotype_card_pale_thin")
         resultPlate.texture?.filteringMode = .nearest
-        resultPlate.size = CGSize(width: size.width * 0.85, height: 120)
-        resultPlate.position = CGPoint(x: centerX, y: centerY + 180)
+        resultPlate.size = CGSize(width: plateWidth, height: isCompact ? 100 : 120)
+        resultPlate.position = CGPoint(x: centerX, y: plateY)
         resultPlate.alpha = 0
         addChild(resultPlate)
-        
-        let resultTitle = makeLabel("The Dihybrid Secret", fontSize: 26, at: .zero, bold: true)
+
+        let resultTitle = makeLabel("The Dihybrid Secret", fontSize: isCompact ? 18 : 26, at: .zero, bold: true)
         resultTitle.fontColor = .black
         resultTitle.zPosition = 1
         resultPlate.addChild(resultTitle)
 
-        let ratioLbl = makeLabel("9 : 3 : 3 : 1", fontSize: 72, at: CGPoint(x: centerX, y: centerY + 50), bold: true)
+        let ratioLbl = makeLabel("9 : 3 : 3 : 1", fontSize: isCompact ? 38 : 72, at: CGPoint(x: centerX, y: ratioY), bold: true)
         ratioLbl.fontColor = UIColor(red: 0.35, green: 0.15, blue: 0.75, alpha: 1)
         ratioLbl.alpha = 0
         addChild(ratioLbl)
 
-        let subLbl = makeLabel("Purple Round : Purple Spiky : White Round : White Spiky", fontSize: 22, at: CGPoint(x: centerX, y: centerY - 45), color: UIColor.systemGray)
+        let subLbl = makeLabel("Purple Round : Purple Spiky : White Round : White Spiky", fontSize: isCompact ? 14 : 22, at: CGPoint(x: centerX, y: subY), color: UIColor.systemGray)
+        subLbl.preferredMaxLayoutWidth = contentWidth
         subLbl.alpha = 0
         addChild(subLbl)
 
-        let description = makeLabel("This perfect ratio reveals how two different traits\ninherit independently from each other!", fontSize: 20, at: CGPoint(x: centerX, y: centerY - 130))
+        let description = makeLabel("This perfect ratio reveals how two different traits\ninherit independently from each other!", fontSize: isCompact ? 13 : 20, at: CGPoint(x: centerX, y: descY))
+        description.preferredMaxLayoutWidth = contentWidth
         description.alpha = 0
         addChild(description)
 
@@ -336,31 +357,31 @@ class Level9Scene: GameScene {
 
         let tex = SKTexture(imageNamed: "genotype_card_purple_thin")
         let btnRatio = tex.size().width / tex.size().height
-        let btnH: CGFloat = 80
+        let btnH: CGFloat = isCompact ? 60 : 80
         let btn = SKSpriteNode(texture: tex)
         btn.texture?.filteringMode = .nearest
         btn.size = CGSize(width: btnH * btnRatio, height: btnH)
         btn.name = "nextBtn"
-        btn.position = CGPoint(x: centerX, y: rowContinue + 60)
+        btn.position = CGPoint(x: centerX, y: btnY)
         btn.alpha = 0
         addChild(btn)
 
         let arrowTex = SKTexture(imageNamed: "arrow")
         let arrowRatio = arrowTex.size().width / arrowTex.size().height
-        let arrowH: CGFloat = 18
+        let arrowH: CGFloat = isCompact ? 14 : 18
         let arrowSprite = SKSpriteNode(texture: arrowTex)
         arrowSprite.texture?.filteringMode = .nearest
         arrowSprite.size = CGSize(width: arrowH * arrowRatio, height: arrowH)
-        arrowSprite.position = CGPoint(x: 45, y: -1)
+        arrowSprite.position = CGPoint(x: isCompact ? 36 : 45, y: -1)
         arrowSprite.name = "nextBtn"
         btn.addChild(arrowSprite)
 
         let btnLbl = SKLabelNode(text: "Finish")
         btnLbl.fontName = "AvenirNext-Bold"
-        btnLbl.fontSize = 24
+        btnLbl.fontSize = isCompact ? 18 : 24
         btnLbl.fontColor = .white
         btnLbl.verticalAlignmentMode = .center
-        btnLbl.position = CGPoint(x: -20, y: 0)
+        btnLbl.position = CGPoint(x: isCompact ? -15 : -20, y: 0)
         btnLbl.name = "nextBtn"
         btn.addChild(btnLbl)
 
