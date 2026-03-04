@@ -35,10 +35,10 @@ class Level6Scene: GameScene {
     private var groupCenterY: CGFloat { usableTop - usableHeight / 2 }
 
     private var rowInstruct: CGFloat { isCompact ? groupCenterY + 220 : size.height * 0.74 }
-    private var rowCross:    CGFloat { isCompact ? groupCenterY + 115 : size.height * 0.64 }
-    private var rowGridMid:  CGFloat { isCompact ? groupCenterY       : size.height * 0.46 }
-    private var rowTray:     CGFloat { isCompact ? groupCenterY - 165 : size.height * 0.16 }
-    private var rowLabel:    CGFloat { isCompact ? groupCenterY - 245 : size.height * 0.05 }
+    private var rowCross: CGFloat { isCompact ? groupCenterY + 115 : size.height * 0.64 }
+    private var rowGridMid: CGFloat { isCompact ? groupCenterY : size.height * 0.46 }
+    private var rowTray: CGFloat { isCompact ? groupCenterY - 165 : size.height * 0.16 }
+    private var rowLabel: CGFloat { isCompact ? groupCenterY - 245 : size.height * 0.05 }
 
     private var gridNode: PunnettGridNode!
     private var trayTiles: [GenotypeCardNode] = []

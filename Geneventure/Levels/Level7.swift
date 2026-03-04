@@ -35,12 +35,12 @@ class Level7Scene: GameScene {
     private var usableHeight: CGFloat { size.height - navbarHeight - 30 }
     private var groupCenterY: CGFloat { usableTop - usableHeight / 2 }
 
-    private var rowInstruct:  CGFloat { isCompact ? groupCenterY + 230 : size.height * 0.74 }
-    private var rowOffLabel:  CGFloat { isCompact ? groupCenterY + 155 : size.height * 0.63 }
+    private var rowInstruct: CGFloat { isCompact ? groupCenterY + 230 : size.height * 0.74 }
+    private var rowOffLabel: CGFloat { isCompact ? groupCenterY + 155 : size.height * 0.63 }
     private var rowOffSlimes: CGFloat { isCompact ? groupCenterY + 105 : size.height * 0.55 }
-    private var rowSlots:     CGFloat { isCompact ? groupCenterY - 10  : size.height * 0.38 }
-    private var rowSources:   CGFloat { isCompact ? groupCenterY - 145 : size.height * 0.20 }
-    private var rowLabel:     CGFloat { isCompact ? groupCenterY - 245 : size.height * 0.05 }
+    private var rowSlots: CGFloat { isCompact ? groupCenterY - 10 : size.height * 0.38 }
+    private var rowSources: CGFloat { isCompact ? groupCenterY - 145 : size.height * 0.20 }
+    private var rowLabel: CGFloat { isCompact ? groupCenterY - 245 : size.height * 0.05 }
 
     private var slot1: SlotNode!
     private var slot2: SlotNode!
