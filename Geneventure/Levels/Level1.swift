@@ -43,23 +43,23 @@ class Level1Scene: GameScene {
     }
 
     private var contentWidth: CGFloat { min(size.width - 40, 480) }
-    private var contentLeft:  CGFloat { (size.width - contentWidth) / 2 }
+    private var contentLeft: CGFloat { (size.width - contentWidth) / 2 }
 
-    private var parent1X:   CGFloat { contentLeft + contentWidth * 0.18 }
-    private var parent2X:   CGFloat { contentLeft + contentWidth * 0.50 }
+    private var parent1X: CGFloat { contentLeft + contentWidth * 0.18 }
+    private var parent2X: CGFloat { contentLeft + contentWidth * 0.50 }
     private var offspringX: CGFloat { contentLeft + contentWidth * 0.82 }
 
-    private var slimeSize:      CGFloat { min(isCompact ? 80 : 110, contentWidth * 0.20) }
+    private var slimeSize: CGFloat { min(isCompact ? 80 : 110, contentWidth * 0.20) }
     private var symbolFontSize: CGFloat { slimeSize * 0.30 }
 
     private var headerCardYOffset: CGFloat { size.height * (isCompact ? 0.13 : 0.11) }
-    private var captionYOffset:    CGFloat { size.height * (isCompact ? 0.13 : 0.18) }
+    private var captionYOffset: CGFloat { size.height * (isCompact ? 0.13 : 0.18) }
     private var nextButtonYOffset: CGFloat { size.height * (isCompact ? 0.24 : 0.30) }
 
     private var captionPlateWidth: CGFloat { contentWidth }
-    private var captionMaxWidth:   CGFloat { captionPlateWidth * 0.72 }
-    private var captionFontSize:   CGFloat { isCompact ? 15 : 20 }
-    private var cardFontSize:      CGFloat { isCompact ? 13 : 18 }
+    private var captionMaxWidth: CGFloat { captionPlateWidth * 0.72 }
+    private var captionFontSize: CGFloat { isCompact ? 15 : 20 }
+    private var cardFontSize: CGFloat { isCompact ? 13 : 18 }
 
     
     override func didMove(to view: SKView) {
