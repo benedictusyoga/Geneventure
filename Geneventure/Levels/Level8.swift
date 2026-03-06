@@ -38,14 +38,14 @@ class Level8Scene: GameScene {
     private var usableHeight: CGFloat { size.height - navbarHeight - 30 }
     private var groupCenterY: CGFloat { usableTop - usableHeight / 2 }
 
-    private var rowInstruct:   CGFloat { (isCompact || isShortScreen) ? groupCenterY + 235 : groupCenterY + 261 }
+    private var rowInstruct: CGFloat { (isCompact || isShortScreen) ? groupCenterY + 235 : groupCenterY + 261 }
     private var rowRatioTitle: CGFloat { (isCompact || isShortScreen) ? groupCenterY + 130 : groupCenterY + 151 }
-    private var rowRatioValue: CGFloat { (isCompact || isShortScreen) ? groupCenterY + 95  : groupCenterY + 91  }
-    private var rowBar:        CGFloat { (isCompact || isShortScreen) ? groupCenterY + 57  : groupCenterY + 39  }
-    private var rowParents:    CGFloat { (isCompact || isShortScreen) ? groupCenterY - 30  : groupCenterY - 59  }
-    private var rowHint:       CGFloat { (isCompact || isShortScreen) ? groupCenterY - 154 : groupCenterY - 196 }
-    private var rowCards:      CGFloat { (isCompact || isShortScreen) ? groupCenterY - 209 : groupCenterY - 259 }
-    private var rowLabel:      CGFloat { (isCompact || isShortScreen) ? groupCenterY - 264 : groupCenterY - 322 }
+    private var rowRatioValue: CGFloat { (isCompact || isShortScreen) ? groupCenterY + 95 : groupCenterY + 91  }
+    private var rowBar: CGFloat { (isCompact || isShortScreen) ? groupCenterY + 57 : groupCenterY + 39  }
+    private var rowParents: CGFloat { (isCompact || isShortScreen) ? groupCenterY - 30 : groupCenterY - 59  }
+    private var rowHint: CGFloat { (isCompact || isShortScreen) ? groupCenterY - 154 : groupCenterY - 196 }
+    private var rowCards: CGFloat { (isCompact || isShortScreen) ? groupCenterY - 209 : groupCenterY - 259 }
+    private var rowLabel: CGFloat { (isCompact || isShortScreen) ? groupCenterY - 264 : groupCenterY - 322 }
 
     private var knownSlime: SlimeNode!
     private var mysteryZone: SKSpriteNode!
