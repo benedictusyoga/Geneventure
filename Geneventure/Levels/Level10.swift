@@ -22,12 +22,12 @@ class Level10Scene: GameScene {
     private var usableHeight: CGFloat { size.height - navbarHeight - 30 }
     private var groupCenterY: CGFloat { usableTop - usableHeight / 2 }
 
-    private var rowInstruct:   CGFloat { useSmallUI ? groupCenterY + 184 : groupCenterY + 273 }
-    private var rowCross:      CGFloat { useSmallUI ? groupCenterY + 84  : groupCenterY + 133 }
-    private var rowGridTop:    CGFloat { useSmallUI ? groupCenterY + 13  : groupCenterY + 30  }
+    private var rowInstruct: CGFloat { useSmallUI ? groupCenterY + 184 : groupCenterY + 273 }
+    private var rowCross: CGFloat { useSmallUI ? groupCenterY + 84 : groupCenterY + 133 }
+    private var rowGridTop: CGFloat { useSmallUI ? groupCenterY + 13 : groupCenterY + 30  }
     private var rowButtonsTop: CGFloat { useSmallUI ? groupCenterY - 207 : groupCenterY - 303 }
     private var rowButtonsBot: CGFloat { useSmallUI ? groupCenterY - 289 : groupCenterY - 405 }
-    private var rowHint:       CGFloat { useSmallUI ? groupCenterY - 340 : groupCenterY - 469 }
+    private var rowHint: CGFloat { useSmallUI ? groupCenterY - 340 : groupCenterY - 469 }
 
     private var phase = 1
 

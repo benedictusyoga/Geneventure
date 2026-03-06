@@ -38,8 +38,8 @@ class InfiniteScene: GameScene {
     private var groupCenterY: CGFloat { usableTop - usableHeight / 2 }
 
     private var rowInstruct: CGFloat { useSmallUI ? groupCenterY + 180 : groupCenterY + 230 }
-    private var rowParents:  CGFloat { useSmallUI ? groupCenterY + 110 : groupCenterY + 140 }
-    private var rowGrid:     CGFloat { useSmallUI ? groupCenterY - 10  : groupCenterY - 20  }
+    private var rowParents: CGFloat { useSmallUI ? groupCenterY + 110 : groupCenterY + 140 }
+    private var rowGrid: CGFloat { useSmallUI ? groupCenterY - 10 : groupCenterY - 20  }
     
     private var parentLabel: SKLabelNode!
     private var instructionPlate: SKSpriteNode!

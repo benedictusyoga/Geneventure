@@ -68,8 +68,8 @@ struct ScratchPadView: View {
             .clipShape(RoundedRectangle(cornerRadius: 16))
             .shadow(color: .black.opacity(0.1), radius: 10, y: 5)
             .frame(maxWidth: sizeClass == .compact ? .infinity : 550,
-                   maxHeight: sizeClass == .compact ? 520 : 650)
-            .padding(.horizontal, sizeClass == .compact ? 16 : 0)
+                   maxHeight: sizeClass == .compact ? 600 : 650)
+            .padding(.horizontal, sizeClass == .compact ? 12 : 0)
         }
         .environment(\.colorScheme, .light)
         .transition(.move(edge: .bottom).combined(with: .opacity))
@@ -101,31 +101,70 @@ struct ScratchPadView: View {
     private var dihybridContent: some View {
         let p1Gametes = gametes(c1: p1cDom1, c2: p1cDom2, s1: p1sDom1, s2: p1sDom2)
         let p2Gametes = gametes(c1: p2cDom1, c2: p2cDom2, s1: p2sDom1, s2: p2sDom2)
+        let isCompact = sizeClass == .compact
 
-        VStack(spacing: 20) {
-            VStack(spacing: 12) {
-                HStack {
-                    Text("Parent 1:")
-                        .fontWeight(.bold)
-                    Spacer()
-                    GenePickerPair(isDominant1: $p1cDom1, isDominant2: $p1cDom2, domId: "B", recId: "b")
-                    Text("·").foregroundColor(.secondary)
-                    GenePickerPair(isDominant1: $p1sDom1, isDominant2: $p1sDom2, domId: "R", recId: "r")
-                    Spacer()
-                    Text(genotypeLabel(c1: p1cDom1, c2: p1cDom2, s1: p1sDom1, s2: p1sDom2))
-                        .font(.system(.body, design: .monospaced))
+        VStack(spacing: 16) {
+            VStack(spacing: 10) {
+                if isCompact {
+                    VStack(alignment: .leading, spacing: 6) {
+                        HStack {
+                            Text("Parent 1:")
+                                .fontWeight(.bold)
+                            Spacer()
+                            Text(genotypeLabel(c1: p1cDom1, c2: p1cDom2, s1: p1sDom1, s2: p1sDom2))
+                                .font(.system(.body, design: .monospaced))
+                                .foregroundColor(.secondary)
+                        }
+                        HStack(spacing: 8) {
+                            GenePickerPair(isDominant1: $p1cDom1, isDominant2: $p1cDom2, domId: "B", recId: "b")
+                            Text("·").foregroundColor(.secondary)
+                            GenePickerPair(isDominant1: $p1sDom1, isDominant2: $p1sDom2, domId: "R", recId: "r")
+                        }
+                    }
+                } else {
+                    HStack {
+                        Text("Parent 1:")
+                            .fontWeight(.bold)
+                        Spacer()
+                        GenePickerPair(isDominant1: $p1cDom1, isDominant2: $p1cDom2, domId: "B", recId: "b")
+                        Text("·").foregroundColor(.secondary)
+                        GenePickerPair(isDominant1: $p1sDom1, isDominant2: $p1sDom2, domId: "R", recId: "r")
+                        Spacer()
+                        Text(genotypeLabel(c1: p1cDom1, c2: p1cDom2, s1: p1sDom1, s2: p1sDom2))
+                            .font(.system(.body, design: .monospaced))
+                    }
                 }
-                
-                HStack {
-                    Text("Parent 2:")
-                        .fontWeight(.bold)
-                    Spacer()
-                    GenePickerPair(isDominant1: $p2cDom1, isDominant2: $p2cDom2, domId: "B", recId: "b")
-                    Text("·").foregroundColor(.secondary)
-                    GenePickerPair(isDominant1: $p2sDom1, isDominant2: $p2sDom2, domId: "R", recId: "r")
-                    Spacer()
-                    Text(genotypeLabel(c1: p2cDom1, c2: p2cDom2, s1: p2sDom1, s2: p2sDom2))
-                        .font(.system(.body, design: .monospaced))
+
+                Divider()
+
+                if isCompact {
+                    VStack(alignment: .leading, spacing: 6) {
+                        HStack {
+                            Text("Parent 2:")
+                                .fontWeight(.bold)
+                            Spacer()
+                            Text(genotypeLabel(c1: p2cDom1, c2: p2cDom2, s1: p2sDom1, s2: p2sDom2))
+                                .font(.system(.body, design: .monospaced))
+                                .foregroundColor(.secondary)
+                        }
+                        HStack(spacing: 8) {
+                            GenePickerPair(isDominant1: $p2cDom1, isDominant2: $p2cDom2, domId: "B", recId: "b")
+                            Text("·").foregroundColor(.secondary)
+                            GenePickerPair(isDominant1: $p2sDom1, isDominant2: $p2sDom2, domId: "R", recId: "r")
+                        }
+                    }
+                } else {
+                    HStack {
+                        Text("Parent 2:")
+                            .fontWeight(.bold)
+                        Spacer()
+                        GenePickerPair(isDominant1: $p2cDom1, isDominant2: $p2cDom2, domId: "B", recId: "b")
+                        Text("·").foregroundColor(.secondary)
+                        GenePickerPair(isDominant1: $p2sDom1, isDominant2: $p2sDom2, domId: "R", recId: "r")
+                        Spacer()
+                        Text(genotypeLabel(c1: p2cDom1, c2: p2cDom2, s1: p2sDom1, s2: p2sDom2))
+                            .font(.system(.body, design: .monospaced))
+                    }
                 }
             }
             .padding()
@@ -270,8 +309,8 @@ private struct DihybridScratchGrid: View {
     let colGametes: [ScratchPadView.Gamete]
 
     @Environment(\.horizontalSizeClass) private var sizeClass
-    private var cellSize: CGFloat { sizeClass == .compact ? 50 : 64 }
-    private var headerSize: CGFloat { sizeClass == .compact ? 32 : 40 }
+    private var cellSize: CGFloat { sizeClass == .compact ? 44 : 64 }
+    private var headerSize: CGFloat { sizeClass == .compact ? 28 : 40 }
 
     var body: some View {
         VStack(spacing: 0) {
